@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noticias — MRGNT</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="noticias">
+<div class="container">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><img src="assets/logo.png" alt="MRGNT" class="nav-logo"></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <div class="nav-links">
+      <a href="index.html#inicio" class="nav-link" data-page="inicio">Inicio</a>
+      <a href="noticias.html" class="nav-link" data-page="noticias">Noticias</a>
+      <a href="eventos.html" class="nav-link" data-page="eventos">Eventos</a>
+      <a href="artistas.html" class="nav-link" data-page="artistas">Artistas</a>
+      <a href="convocatoria.html" class="nav-link" data-page="convocatoria">Convocatoria</a>
+    </div>
+    <div class="nav-social">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="page-header">
+  <h1>NOTICIAS</h1>
+  <p>Blogs de opinión, reportaje de eventos, periodismo musical y entrevistas.</p>
+  <div class="tabs" id="noticias-tabs"></div>
+</section>
+
+<!-- ARTICLES -->
+<section class="page-content">
+  <div class="posts-grid" id="noticias-posts" style="margin-top:0"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-logo">MRGNT</span>
+  <div class="footer-links">
+    <a href="index.html#inicio">Inicio</a>
+    <a href="noticias.html">Noticias</a>
+    <a href="eventos.html">Eventos</a>
+    <a href="artistas.html">Artistas</a>
+    <a href="convocatoria.html">Convocatoria</a>
+  </div>
+  <span class="footer-copy">© 2026 MRGNT</span>
+</footer>
+
+</div>
+<script src="data.js"></script>
+<script src="nav.js"></script>
+<script src="noticias.js"></script>
+</body>
+</html>

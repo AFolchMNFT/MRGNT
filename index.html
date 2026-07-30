@@ -6,22 +6,29 @@
 <title>MRGNT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-page="inicio">
 <div class="container">
 
 <!-- NAV -->
 <nav class="nav">
-  <img src="assets/logo.png" alt="MRGNT" class="nav-logo">
-  <div class="nav-links">
-    <a href="#inicio" class="nav-link">Inicio</a>
-    <a href="#noticias" class="nav-link">Noticias</a>
-    <a href="#eventos" class="nav-link">Eventos</a>
-    <a href="#artistas" class="nav-link">Artistas</a>
-    <a href="#convocatoria" class="nav-link">Convocatoria</a>
-  </div>
-  <div class="nav-social">
-    <a href="#">Instagram</a>
-    <a href="#">TikTok</a>
+  <a href="index.html" class="nav-brand"><img src="assets/logo.png" alt="MRGNT" class="nav-logo"></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <div class="nav-links">
+      <a href="index.html#inicio" class="nav-link" data-page="inicio">Inicio</a>
+      <a href="noticias.html" class="nav-link" data-page="noticias">Noticias</a>
+      <a href="eventos.html" class="nav-link" data-page="eventos">Eventos</a>
+      <a href="artistas.html" class="nav-link" data-page="artistas">Artistas</a>
+      <a href="convocatoria.html" class="nav-link" data-page="convocatoria">Convocatoria</a>
+    </div>
+    <div class="nav-social">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
   </div>
 </nav>
 
@@ -30,35 +37,35 @@
   <h1>EL LINEUP SE PONE RARO<br>(en el buen sentido)</h1>
   <p>Noticias, cartelera y artistas de MRGNT — todo en un mismo lugar. Poesía, música, artes visuales y más.</p>
   <div class="hero-actions">
-    <a href="#eventos" class="btn btn-secondary btn-lg">Ver eventos</a>
-    <a href="#convocatoria" class="btn btn-ghost btn-lg">Aplicar a la convocatoria</a>
+    <a href="eventos.html" class="btn btn-secondary btn-lg">Ver eventos</a>
+    <a href="convocatoria.html" class="btn btn-ghost btn-lg">Aplicar a la convocatoria</a>
   </div>
 </section>
 
 <!-- NOTICIAS -->
-<section id="noticias" class="section section-page">
+<section class="section section-page">
   <div class="section-header">
-    <a href="#noticias" class="section-header-link"><h2>NOTICIAS</h2></a>
-    <a href="#noticias" class="view-all">Ver todas →</a>
+    <a href="noticias.html" class="section-header-link"><h2>NOTICIAS</h2></a>
+    <a href="noticias.html" class="view-all">Ver todas →</a>
   </div>
   <div class="tabs" id="noticias-tabs"></div>
   <div class="posts-grid" id="noticias-posts"></div>
 </section>
 
 <!-- EVENTOS -->
-<section id="eventos" class="section section-cream">
+<section class="section section-cream">
   <div class="section-header">
-    <a href="#eventos" class="section-header-link"><h2>PRÓXIMOS EVENTOS — CARTELERA</h2></a>
-    <a href="#eventos" class="view-all">Ver calendario completo →</a>
+    <a href="eventos.html" class="section-header-link"><h2>PRÓXIMOS EVENTOS — CARTELERA</h2></a>
+    <a href="eventos.html" class="view-all">Ver calendario completo →</a>
   </div>
   <div class="events-list" id="events-list"></div>
 </section>
 
 <!-- ARTISTAS -->
-<section id="artistas" class="section section-page">
+<section class="section section-page">
   <div class="section-header">
-    <a href="#artistas" class="section-header-link"><h2>ARTISTAS MRGNT</h2></a>
-    <a href="#artistas" class="view-all">Ver todos →</a>
+    <a href="artistas.html" class="section-header-link"><h2>ARTISTAS MRGNT</h2></a>
+    <a href="artistas.html" class="view-all">Ver todos →</a>
   </div>
   <div class="tabs" id="artistas-tabs"></div>
   <div class="artists-grid" id="artistas-list"></div>
@@ -74,20 +81,7 @@
       <a href="#" class="social">TikTok</a>
       <a href="mailto:hola@mrgnt.mx" class="contact-email">hola@mrgnt.mx</a>
     </div>
-    <a href="#convocatoria" class="btn btn-secondary btn-md">Ver convocatoria →</a>
-  </div>
-</section>
-
-<!-- CONVOCATORIA -->
-<section id="convocatoria" class="section section-page">
-  <div class="convocatoria-inner">
-    <h2>CONVOCATORIA</h2>
-    <p>¿Tienes una propuesta artística? Aplica para participar en el próximo festival — poesía, música, artes visuales, escultura y más.</p>
-    <div class="card form-card">
-      <div class="form-placeholder">
-        Formulario de Google Forms embebido aquí<br>(pega el enlace de embed del formulario)
-      </div>
-    </div>
+    <a href="convocatoria.html" class="btn btn-secondary btn-md">Ver convocatoria →</a>
   </div>
 </section>
 
@@ -95,16 +89,18 @@
 <footer class="footer">
   <span class="footer-logo">MRGNT</span>
   <div class="footer-links">
-    <a href="#inicio">Inicio</a>
-    <a href="#noticias">Noticias</a>
-    <a href="#eventos">Eventos</a>
-    <a href="#artistas">Artistas</a>
-    <a href="#convocatoria">Convocatoria</a>
+    <a href="index.html#inicio">Inicio</a>
+    <a href="noticias.html">Noticias</a>
+    <a href="eventos.html">Eventos</a>
+    <a href="artistas.html">Artistas</a>
+    <a href="convocatoria.html">Convocatoria</a>
   </div>
   <span class="footer-copy">© 2026 MRGNT</span>
 </footer>
 
 </div>
+<script src="data.js"></script>
+<script src="nav.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
