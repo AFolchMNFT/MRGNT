@@ -18,7 +18,7 @@ function groupEventsByMonth(list) {
   return groups;
 }
 
-function renderEventos() {
+function renderEventos(events) {
   const container = document.getElementById('eventos-groups');
   container.innerHTML = '';
 
@@ -51,4 +51,6 @@ function renderEventos() {
   });
 }
 
-renderEventos();
+fetch('/api/events')
+  .then((res) => res.json())
+  .then(renderEventos);

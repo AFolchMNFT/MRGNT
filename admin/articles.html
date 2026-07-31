@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noticias — MRGNT admin</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body data-admin>
+
+<div class="admin-shell">
+  <div class="admin-heading">
+    <h1 id="form-heading">NUEVO ARTÍCULO</h1>
+  </div>
+
+  <form class="card admin-form" id="article-form">
+    <input type="hidden" id="article-id">
+    <p class="admin-error" id="article-error" hidden></p>
+    <div class="admin-field">
+      <label for="article-title">Título</label>
+      <input class="admin-input" type="text" id="article-title" required>
+    </div>
+    <div class="admin-form-row">
+      <div class="admin-field">
+        <label for="article-category">Categoría</label>
+        <select class="admin-select" id="article-category" required></select>
+      </div>
+      <div class="admin-field">
+        <label for="article-date">Fecha</label>
+        <input class="admin-input" type="date" id="article-date" required>
+      </div>
+      <div class="admin-field">
+        <label for="article-author">Autor</label>
+        <input class="admin-input" type="text" id="article-author" required>
+      </div>
+    </div>
+    <div class="admin-field">
+      <label for="article-excerpt">Resumen</label>
+      <textarea class="admin-textarea" id="article-excerpt" required></textarea>
+    </div>
+    <div class="admin-field">
+      <label for="article-note">Nota (contenido completo)</label>
+      <textarea class="admin-textarea" id="article-note" rows="8" required></textarea>
+    </div>
+    <div class="admin-field">
+      <label for="article-media">Media (imagen o video, opcional)</label>
+      <input class="admin-input" type="file" id="article-media" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime">
+      <div id="article-media-current" class="admin-media-current" hidden></div>
+    </div>
+    <div class="admin-form-actions">
+      <button type="submit" class="btn btn-secondary btn-md" id="article-submit">Guardar artículo</button>
+      <button type="button" class="admin-btn-link" id="article-cancel" hidden>Cancelar edición</button>
+    </div>
+  </form>
+
+  <div class="admin-list" id="articles-list"></div>
+</div>
+
+<script src="/admin/admin-common.js"></script>
+<script src="/admin/articles.js"></script>
+</body>
+</html>

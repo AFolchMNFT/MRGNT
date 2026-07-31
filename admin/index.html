@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRGNT admin</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body data-admin>
+
+<div class="admin-shell">
+  <div class="admin-heading">
+    <h1>PANEL DE ADMINISTRACIÓN</h1>
+  </div>
+  <div class="admin-list">
+    <a class="card admin-row" href="/admin/artists.html" style="text-decoration:none;">
+      <div class="admin-row-main">
+        <div class="admin-row-title">Artistas</div>
+        <div class="admin-row-sub">Agregar, editar o eliminar artistas del lineup.</div>
+      </div>
+    </a>
+    <a class="card admin-row" href="/admin/events.html" style="text-decoration:none;">
+      <div class="admin-row-main">
+        <div class="admin-row-title">Eventos</div>
+        <div class="admin-row-sub">Agregar, editar o eliminar fechas de la cartelera.</div>
+      </div>
+    </a>
+    <a class="card admin-row" href="/admin/articles.html" style="text-decoration:none;">
+      <div class="admin-row-main">
+        <div class="admin-row-title">Noticias</div>
+        <div class="admin-row-sub">Agregar, editar o eliminar artículos de noticias.</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script src="/admin/admin-common.js"></script>
+<script>
+  requireAdminSession().then((session) => {
+    if (session) renderAdminNav(null);
+  });
+</script>
+</body>
+</html>

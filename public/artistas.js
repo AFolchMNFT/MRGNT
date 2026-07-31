@@ -1,4 +1,5 @@
 let artistasTab = 'Música';
+let allArtists = [];
 
 function renderTabs(container, tabs, active, onSelect) {
   container.innerHTML = '';
@@ -11,15 +12,15 @@ function renderTabs(container, tabs, active, onSelect) {
   });
 }
 
-function renderArtistas() {
+function renderArtistas(disciplines) {
   renderTabs(document.getElementById('artistas-tabs'), disciplines, artistasTab, (t) => {
     artistasTab = t;
-    renderArtistas();
+    renderArtistas(disciplines);
   });
 
   const listEl = document.getElementById('artistas-list');
   listEl.innerHTML = '';
-  artists.filter((a) => a.discipline === artistasTab).forEach((artist) => {
+  allArtists.filter((a) => a.discipline === artistasTab).forEach((artist) => {
     const card = document.createElement('div');
     card.className = 'artist-card';
     card.innerHTML = `
@@ -34,4 +35,10 @@ function renderArtistas() {
   });
 }
 
-renderArtistas();
+Promise.all([
+  fetch('/api/meta').then((res) => res.json()),
+  fetch('/api/artists').then((res) => res.json()),
+]).then(([meta, artists]) => {
+  allArtists = artists;
+  renderArtistas(meta.disciplines);
+});

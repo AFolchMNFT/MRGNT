@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Artistas — MRGNT</title>
+<title>Noticia — MRGNT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="artistas">
+<body data-page="noticias">
 <div class="container">
 
 <!-- NAV -->
@@ -34,14 +34,18 @@
 
 <!-- HEADER -->
 <section class="page-header">
-  <h1>ARTISTAS MRGNT</h1>
-  <p>Poesía, declamación, música, artes visuales y escultura.</p>
-  <div class="tabs" id="artistas-tabs"></div>
+  <a href="noticias.html" class="noticia-back">← Volver a noticias</a>
+  <span class="badge badge-rust" id="noticia-category"></span>
+  <h1 id="noticia-title"></h1>
+  <p class="article-meta" id="noticia-meta"></p>
 </section>
 
-<!-- ARTISTS -->
+<!-- ARTICLE -->
 <section class="page-content">
-  <div class="artists-grid" id="artistas-list" style="margin-top:0"></div>
+  <div class="card noticia-card">
+    <div class="noticia-media" id="noticia-media" hidden></div>
+    <div class="noticia-body" id="noticia-body"></div>
+  </div>
 </section>
 
 <!-- FOOTER -->
@@ -58,8 +62,7 @@
 </footer>
 
 </div>
-<script src="data.js"></script>
 <script src="nav.js"></script>
-<script src="artistas.js"></script>
+<script src="noticia.js"></script>
 </body>
 </html>

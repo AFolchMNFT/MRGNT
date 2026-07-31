@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artistas — MRGNT admin</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body data-admin>
+
+<div class="admin-shell">
+  <div class="admin-heading">
+    <h1 id="form-heading">NUEVO ARTISTA</h1>
+  </div>
+
+  <form class="card admin-form" id="artist-form">
+    <input type="hidden" id="artist-id">
+    <p class="admin-error" id="artist-error" hidden></p>
+    <div class="admin-form-row">
+      <div class="admin-field">
+        <label for="artist-name">Nombre</label>
+        <input class="admin-input" type="text" id="artist-name" required>
+      </div>
+      <div class="admin-field">
+        <label for="artist-discipline">Disciplina</label>
+        <select class="admin-select" id="artist-discipline" required></select>
+      </div>
+    </div>
+    <div class="admin-field">
+      <label for="artist-genre">Género</label>
+      <input class="admin-input" type="text" id="artist-genre">
+    </div>
+    <div class="admin-checkbox-row">
+      <input type="checkbox" id="artist-featured">
+      <label for="artist-featured">Destacado (Featured)</label>
+    </div>
+    <div class="admin-form-actions">
+      <button type="submit" class="btn btn-secondary btn-md" id="artist-submit">Guardar artista</button>
+      <button type="button" class="admin-btn-link" id="artist-cancel" hidden>Cancelar edición</button>
+    </div>
+  </form>
+
+  <div class="admin-list" id="artists-list"></div>
+</div>
+
+<script src="/admin/admin-common.js"></script>
+<script src="/admin/artists.js"></script>
+</body>
+</html>

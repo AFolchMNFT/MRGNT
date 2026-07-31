@@ -1,5 +1,3 @@
-const noticiasCategories = ['Blogs de opinión', 'Reportaje de eventos', 'Periodismo musical', 'Entrevistas'];
-
 const articles = [
   { slug: 'escenario-chico', category: 'Blogs de opinión', title: '¿Por qué el escenario chico siempre roba la función?', date: '12 jul 2026', author: 'Dana Ibarra', excerpt: 'Una defensa del stage secundario, donde pasan las cosas más raras (y las mejores).' },
   { slug: 'discos-del-ano', category: 'Blogs de opinión', title: 'Cinco discos que definieron el año en la escena local', date: '05 jul 2026', author: 'Rodrigo Nava', excerpt: 'Un repaso —parcial y necio— de lo que sonó fuerte este año.' },
@@ -16,17 +14,15 @@ const articles = [
 ];
 
 const events = [
-  { id: 'noche-poesia', date: '08 ago 2026', day: 'SÁB', time: '8:00 PM', stage: 'Foro Central', artist: 'Noche de poesía + música en vivo', tag: 'Destacado' },
-  { id: 'expo-visuales', date: '14 ago 2026', day: 'VIE', time: '7:30 PM', stage: 'Galería Norte', artist: 'Exposición de artes visuales', tag: '' },
-  { id: 'escultura-viva', date: '23 ago 2026', day: 'DOM', time: '6:00 PM', stage: 'Patio MRGNT', artist: 'Escultura en vivo + banda invitada', tag: '' },
-  { id: 'nova-sol', date: '29 ago 2026', day: 'SÁB', time: '9:00 PM', stage: 'Main Stage', artist: 'Nova Sol', tag: 'Headliner' },
-  { id: 'declamacion-abierta', date: '05 sep 2026', day: 'SÁB', time: '6:30 PM', stage: 'Carpa Sur', artist: 'Declamación a micrófono abierto', tag: '' },
-  { id: 'kessler', date: '12 sep 2026', day: 'SÁB', time: '11:00 PM', stage: 'Warehouse', artist: 'Kessler', tag: 'Headliner' },
-  { id: 'marigold', date: '19 sep 2026', day: 'SÁB', time: '6:00 PM', stage: 'Garden', artist: 'Marigold Static', tag: '' },
-  { id: 'dj-compass', date: '26 sep 2026', day: 'SÁB', time: '5:00 PM', stage: 'Main Stage', artist: 'DJ Compass', tag: '' },
+  { date: '08 ago 2026', time: '8:00 PM', stage: 'Foro Central', artist: 'Noche de poesía + música en vivo', tag: 'Destacado' },
+  { date: '14 ago 2026', time: '7:30 PM', stage: 'Galería Norte', artist: 'Exposición de artes visuales', tag: '' },
+  { date: '23 ago 2026', time: '6:00 PM', stage: 'Patio MRGNT', artist: 'Escultura en vivo + banda invitada', tag: '' },
+  { date: '29 ago 2026', time: '9:00 PM', stage: 'Main Stage', artist: 'Nova Sol', tag: 'Headliner' },
+  { date: '05 sep 2026', time: '6:30 PM', stage: 'Carpa Sur', artist: 'Declamación a micrófono abierto', tag: '' },
+  { date: '12 sep 2026', time: '11:00 PM', stage: 'Warehouse', artist: 'Kessler', tag: 'Headliner' },
+  { date: '19 sep 2026', time: '6:00 PM', stage: 'Garden', artist: 'Marigold Static', tag: '' },
+  { date: '26 sep 2026', time: '5:00 PM', stage: 'Main Stage', artist: 'DJ Compass', tag: '' },
 ];
-
-const disciplines = ['Poesía', 'Declamación', 'Música', 'Artes visuales', 'Escultura'];
 
 const artists = [
   { name: 'Renata Vidal', discipline: 'Poesía', genre: 'Poesía escénica', featured: true },
@@ -44,3 +40,5 @@ const artists = [
   { name: 'Ignacio Prado', discipline: 'Escultura', genre: 'Escultura en metal', featured: true },
   { name: 'Cami Salgado', discipline: 'Escultura', genre: 'Escultura en barro' },
 ];
+
+module.exports = { articles, events, artists };

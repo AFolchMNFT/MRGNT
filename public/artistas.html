@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eventos — MRGNT</title>
+<title>Artistas — MRGNT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="eventos">
+<body data-page="artistas">
 <div class="container">
 
 <!-- NAV -->
@@ -34,13 +34,14 @@
 
 <!-- HEADER -->
 <section class="page-header">
-  <h1>CARTELERA COMPLETA</h1>
-  <p>Todos los próximos eventos de MRGNT, ordenados por fecha.</p>
+  <h1>ARTISTAS MRGNT</h1>
+  <p>Poesía, declamación, música, artes visuales y escultura.</p>
+  <div class="tabs" id="artistas-tabs"></div>
 </section>
 
-<!-- EVENTS -->
+<!-- ARTISTS -->
 <section class="page-content">
-  <div class="eventos-groups" id="eventos-groups"></div>
+  <div class="artists-grid" id="artistas-list" style="margin-top:0"></div>
 </section>
 
 <!-- FOOTER -->
@@ -57,8 +58,7 @@
 </footer>
 
 </div>
-<script src="data.js"></script>
 <script src="nav.js"></script>
-<script src="eventos.js"></script>
+<script src="artistas.js"></script>
 </body>
 </html>
