@@ -5,3 +5,10 @@ server/data/*.db-shm
 server/data/*.db-wal
 public/uploads/*
 !public/uploads/.gitkeep
+functions/node_modules/
+emulator-data/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log

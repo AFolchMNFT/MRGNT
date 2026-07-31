@@ -1,3 +1,5 @@
+import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
+
 let artists = [];
 let editingId = null;
 

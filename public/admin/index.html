@@ -35,8 +35,8 @@
   </div>
 </div>
 
-<script src="/admin/admin-common.js"></script>
-<script>
+<script type="module">
+  import { requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
   requireAdminSession().then((session) => {
     if (session) renderAdminNav(null);
   });

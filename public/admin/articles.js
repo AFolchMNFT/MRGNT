@@ -1,3 +1,7 @@
+import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js';
+import { storage } from '/firebase-config.js';
+import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
+
 let articles = [];
 let editingId = null;
 let currentMediaRemoved = false;
@@ -109,25 +113,51 @@ async function deleteArticle(article) {
   }
 }
 
+async function uploadMediaFile(file) {
+  const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext ? '.' + ext : ''}`;
+  const path = `articles/${filename}`;
+  const ref = storageRef(storage, path);
+  const task = uploadBytesResumable(ref, file);
+  await new Promise((resolve, reject) => task.on('state_changed', null, reject, resolve));
+  const url = await getDownloadURL(ref);
+  return { url, path, mediaType: file.type.startsWith('video/') ? 'video' : 'image' };
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   errorEl.hidden = true;
-  const formData = new FormData();
-  formData.set('title', document.getElementById('article-title').value);
-  formData.set('category', categorySelect.value);
-  formData.set('article_date', document.getElementById('article-date').value);
-  formData.set('author', document.getElementById('article-author').value);
-  formData.set('excerpt', document.getElementById('article-excerpt').value);
-  formData.set('note', document.getElementById('article-note').value);
-  if (mediaInput.files[0]) formData.set('media', mediaInput.files[0]);
-  if (editingId && currentMediaRemoved) formData.set('remove_media', 'true');
+
+  const body = {
+    title: document.getElementById('article-title').value,
+    category: categorySelect.value,
+    article_date: document.getElementById('article-date').value,
+    author: document.getElementById('article-author').value,
+    excerpt: document.getElementById('article-excerpt').value,
+    note: document.getElementById('article-note').value,
+  };
+
+  if (mediaInput.files[0]) {
+    try {
+      const { url, path, mediaType } = await uploadMediaFile(mediaInput.files[0]);
+      body.media = url;
+      body.media_path = path;
+      body.media_type = mediaType;
+    } catch {
+      errorEl.textContent = 'Error al subir el archivo. Inténtalo de nuevo.';
+      errorEl.hidden = false;
+      return;
+    }
+  }
+
+  if (editingId && currentMediaRemoved) body.remove_media = true;
 
   const url = editingId ? `/api/articles/${editingId}` : '/api/articles';
   const method = editingId ? 'PUT' : 'POST';
-  const res = await apiFetch(url, { method, body: formData });
-  const body = await res.json().catch(() => ({}));
+  const res = await apiFetch(url, { method, body: JSON.stringify(body) });
+  const resBody = await res.json().catch(() => ({}));
   if (!res.ok) {
-    errorEl.textContent = body.error || 'No se pudo guardar el artículo';
+    errorEl.textContent = resBody.error || 'No se pudo guardar el artículo';
     errorEl.hidden = false;
     return;
   }
