@@ -4,7 +4,9 @@
 
 const admin = require('firebase-admin');
 
-admin.initializeApp();
+admin.initializeApp({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT || 'mrgnt-504117',
+});
 
 async function createAdmin(email, password) {
   let userRecord;
