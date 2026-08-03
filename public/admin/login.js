@@ -12,7 +12,7 @@ const FIREBASE_ERRORS = {
 // Redirect if already authenticated admin
 onAuthStateChanged(auth, async (user) => {
   if (!user) return;
-  const token = await user.getIdTokenResult();
+  const token = await user.getIdTokenResult(true);
   if (token.claims.admin) window.location.href = '/admin/index.html';
 });
 
@@ -26,7 +26,7 @@ form.addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    const token = await cred.user.getIdTokenResult();
+    const token = await cred.user.getIdTokenResult(true);
     if (!token.claims.admin) {
       await auth.signOut();
       errorEl.textContent = 'Esta cuenta no tiene permisos de administrador.';
