@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "mrgnt-504117",
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "node_modules/**"],
     "rewrites": [

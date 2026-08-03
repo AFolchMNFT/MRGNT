@@ -7,6 +7,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -16,6 +19,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: functions/package-lock.json
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/993617480326/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: firebase-adminsdk-fbsvc@mrgnt-504117.iam.gserviceaccount.com
+
       - name: Install functions dependencies
         run: npm ci
         working-directory: functions
@@ -23,5 +32,4 @@ jobs:
       - name: Deploy to Firebase
         run: npx firebase-tools@14 deploy --only hosting,functions,firestore,storage
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GOOGLE_CLOUD_PROJECT: mrgnt-504117
