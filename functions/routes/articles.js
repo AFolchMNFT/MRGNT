@@ -4,6 +4,9 @@ const { requireAuth } = require('../auth');
 const { NOTICIAS_CATEGORIES } = require('../constants');
 const { isoToDisplay } = require('../lib/dateFormat');
 const { deleteMediaFile } = require('../storage');
+const { slugify } = require('../lib/slugify');
+const { sanitizeRichText } = require('../lib/sanitize');
+const { detectEmbedProvider } = require('../lib/embeds');
 
 const router = express.Router();
 
@@ -23,21 +26,13 @@ function toClient(doc) {
     note: d.note,
     media: d.media || null,
     mediaType: d.media_type || null,
+    embedUrl: d.embed_url || null,
+    embedProvider: d.embed_provider || null,
   };
 }
 
 function normalizeNote(note) {
-  return note.replace(/\r\n/g, '\n').trim();
-}
-
-function slugify(title) {
-  return title
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
+  return sanitizeRichText(note.replace(/\r\n/g, '\n').trim());
 }
 
 function validate(body) {
@@ -47,6 +42,9 @@ function validate(body) {
   if (!body.author || !body.author.trim()) return 'El autor es requerido';
   if (!body.excerpt || !body.excerpt.trim()) return 'El resumen es requerido';
   if (!body.note || !body.note.trim()) return 'La nota es requerida';
+  if (body.embed_url && body.embed_url.trim() && !detectEmbedProvider(body.embed_url.trim())) {
+    return 'Enlace de embed no reconocido (usa YouTube, Instagram, TikTok o X/Twitter)';
+  }
   return null;
 }
 
@@ -66,6 +64,8 @@ router.post('/', requireAuth, async (req, res) => {
   const { title, category, article_date, author, excerpt, note, media, media_path, media_type } = req.body;
   const rawSlug = req.body.slug && req.body.slug.trim() ? req.body.slug.trim() : title;
   const baseSlug = slugify(rawSlug) || 'articulo';
+  const embedUrl = req.body.embed_url && req.body.embed_url.trim() ? req.body.embed_url.trim() : null;
+  const embedProvider = embedUrl ? detectEmbedProvider(embedUrl) : null;
 
   const docData = {
     category,
@@ -77,6 +77,8 @@ router.post('/', requireAuth, async (req, res) => {
     media: media || null,
     media_path: media_path || null,
     media_type: media_type || null,
+    embed_url: embedUrl,
+    embed_provider: embedProvider,
   };
 
   const col = admin.firestore().collection('articles');
@@ -138,6 +140,17 @@ router.put('/:id', requireAuth, async (req, res) => {
     mediaType = null;
   }
 
+  let embedUrl = existing.embed_url || null;
+  let embedProvider = existing.embed_provider || null;
+
+  if (req.body.embed_url && req.body.embed_url.trim()) {
+    embedUrl = req.body.embed_url.trim();
+    embedProvider = detectEmbedProvider(embedUrl);
+  } else if (req.body.remove_embed === true) {
+    embedUrl = null;
+    embedProvider = null;
+  }
+
   const rawSlug = req.body.slug && req.body.slug.trim() ? req.body.slug.trim() : null;
   const newBaseSlug = rawSlug ? slugify(rawSlug) : oldId;
 
@@ -151,6 +164,8 @@ router.put('/:id', requireAuth, async (req, res) => {
     media,
     media_path: mediaPath,
     media_type: mediaType,
+    embed_url: embedUrl,
+    embed_provider: embedProvider,
   };
 
   try {

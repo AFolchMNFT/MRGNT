@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Noticia — MRGNT</title>
+<title>Evento — MRGNT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="noticias">
+<body data-page="eventos">
 <div class="container">
 
 <!-- NAV -->
@@ -30,18 +30,17 @@
 
 <!-- HEADER -->
 <section class="page-header">
-  <a href="noticias.html" class="noticia-back">← Volver a noticias</a>
-  <span class="badge badge-rust" id="noticia-category"></span>
-  <h1 id="noticia-title"></h1>
-  <p class="article-meta" id="noticia-meta"></p>
+  <a href="eventos.html" class="noticia-back">← Volver a eventos</a>
+  <h1 id="evento-title"></h1>
+  <p class="article-meta" id="evento-meta"></p>
 </section>
 
-<!-- ARTICLE -->
+<!-- EVENT -->
 <section class="page-content">
   <div class="card noticia-card">
-    <div class="noticia-media" id="noticia-media" hidden></div>
-    <div class="noticia-embed" id="noticia-embed" hidden></div>
-    <div class="noticia-body" id="noticia-body"></div>
+    <div class="noticia-body" id="evento-body"></div>
+    <p class="evento-cost" id="evento-cost" hidden></p>
+    <a class="btn btn-secondary btn-md" id="evento-ticket-link" href="#" target="_blank" rel="noopener" hidden>Comprar boletos</a>
   </div>
 </section>
 
@@ -60,6 +59,6 @@
 
 </div>
 <script src="nav.js"></script>
-<script src="noticia.js"></script>
+<script src="evento.js"></script>
 </body>
 </html>

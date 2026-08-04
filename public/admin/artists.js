@@ -1,4 +1,5 @@
 import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
+import { initRichEditor } from '/admin/rich-editor.js';
 
 let artists = [];
 let editingId = null;
@@ -10,11 +11,13 @@ const listEl = document.getElementById('artists-list');
 const cancelBtn = document.getElementById('artist-cancel');
 const submitBtn = document.getElementById('artist-submit');
 const headingEl = document.getElementById('form-heading');
+const bioEditor = initRichEditor(document.getElementById('artist-bio-editor'));
 
 function resetForm() {
   editingId = null;
   form.reset();
   document.getElementById('artist-id').value = '';
+  bioEditor.setHTML('');
   cancelBtn.hidden = true;
   submitBtn.textContent = 'Guardar artista';
   headingEl.textContent = 'NUEVO ARTISTA';
@@ -27,7 +30,10 @@ function startEdit(artist) {
   document.getElementById('artist-name').value = artist.name;
   disciplineSelect.value = artist.discipline;
   document.getElementById('artist-genre').value = artist.genre;
+  document.getElementById('artist-spotify').value = artist.spotifyArtistId || '';
   document.getElementById('artist-featured').checked = artist.featured;
+  document.getElementById('artist-show-spotify').checked = artist.showSpotifyEmbed;
+  bioEditor.setHTML(artist.bio || '');
   cancelBtn.hidden = false;
   submitBtn.textContent = 'Guardar cambios';
   headingEl.textContent = `EDITAR: ${artist.name.toUpperCase()}`;
@@ -83,6 +89,9 @@ form.addEventListener('submit', async (e) => {
     discipline: disciplineSelect.value,
     genre: document.getElementById('artist-genre').value,
     featured: document.getElementById('artist-featured').checked,
+    bio: bioEditor.getHTML(),
+    spotify_artist_id: document.getElementById('artist-spotify').value,
+    show_spotify_embed: document.getElementById('artist-show-spotify').checked,
   };
   const url = editingId ? `/api/artists/${editingId}` : '/api/artists';
   const method = editingId ? 'PUT' : 'POST';

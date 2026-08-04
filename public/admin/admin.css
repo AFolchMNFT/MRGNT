@@ -77,8 +77,32 @@ body[data-admin] { min-height: 100vh; }
   background: var(--surface-card);
 }
 .admin-textarea { resize: vertical; min-height: 80px; }
+.admin-editor {
+  font-family: var(--font-body);
+  background: var(--surface-card);
+  border: var(--border-width-sm) solid var(--border-default);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.admin-editor .ql-toolbar { border: none; border-bottom: var(--border-width-sm) solid var(--border-default); font-family: var(--font-body); }
+.admin-editor .ql-container { border: none; font-family: var(--font-body); font-size: var(--text-base); min-height: 140px; }
+.admin-editor .ql-editor { min-height: 140px; }
 .admin-checkbox-row { display: flex; align-items: center; gap: 8px; }
 .admin-checkbox-row label { font-family: var(--font-body); font-size: var(--text-sm); color: var(--text-body); }
+.admin-toggle-group { display: flex; gap: 8px; margin-bottom: 10px; }
+.admin-toggle-btn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-sm) solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-body);
+  cursor: pointer;
+}
+.admin-toggle-btn.active { background: var(--color-rust-500); color: var(--text-inverse); }
+.admin-hint { font-family: var(--font-body); font-size: var(--text-sm); color: var(--text-muted); margin: 6px 0 0; }
 .admin-media-current { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 8px; }
 .admin-media-current img, .admin-media-current video {
   max-width: 240px;

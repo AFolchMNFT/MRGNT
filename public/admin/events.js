@@ -1,4 +1,5 @@
 import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
+import { initRichEditor } from '/admin/rich-editor.js';
 
 let events = [];
 let editingId = null;
@@ -9,11 +10,13 @@ const listEl = document.getElementById('events-list');
 const cancelBtn = document.getElementById('event-cancel');
 const submitBtn = document.getElementById('event-submit');
 const headingEl = document.getElementById('form-heading');
+const descriptionEditor = initRichEditor(document.getElementById('event-description-editor'));
 
 function resetForm() {
   editingId = null;
   form.reset();
   document.getElementById('event-id').value = '';
+  descriptionEditor.setHTML('');
   cancelBtn.hidden = true;
   submitBtn.textContent = 'Guardar evento';
   headingEl.textContent = 'NUEVO EVENTO';
@@ -27,7 +30,11 @@ function startEdit(ev) {
   document.getElementById('event-time').value = ev.time;
   document.getElementById('event-stage').value = ev.stage;
   document.getElementById('event-artist').value = ev.artist;
+  document.getElementById('event-title').value = ev.title || '';
   document.getElementById('event-tag').value = ev.tag;
+  document.getElementById('event-cost').value = ev.cost || '';
+  document.getElementById('event-ticket-link').value = ev.ticket_link || '';
+  descriptionEditor.setHTML(ev.description || '');
   cancelBtn.hidden = false;
   submitBtn.textContent = 'Guardar cambios';
   headingEl.textContent = `EDITAR: ${ev.artist.toUpperCase()}`;
@@ -44,12 +51,16 @@ function renderList() {
   events.forEach((ev) => {
     const row = document.createElement('div');
     row.className = 'admin-row';
+    const verLink = ev.slug
+      ? `<a href="/evento.html?slug=${encodeURIComponent(ev.slug)}" target="_blank">Ver</a>`
+      : '';
     row.innerHTML = `
       <div class="admin-row-main">
         <div class="admin-row-title">${ev.artist}${ev.tag ? ' · ' + ev.tag : ''}</div>
         <div class="admin-row-sub">${ev.day} ${ev.date} · ${ev.time} — ${ev.stage}</div>
       </div>
       <div class="admin-row-actions">
+        ${verLink}
         <button type="button" class="admin-edit">Editar</button>
         <button type="button" class="admin-delete">Eliminar</button>
       </div>
@@ -83,7 +94,11 @@ form.addEventListener('submit', async (e) => {
     time: document.getElementById('event-time').value,
     stage: document.getElementById('event-stage').value,
     artist: document.getElementById('event-artist').value,
+    title: document.getElementById('event-title').value,
     tag: document.getElementById('event-tag').value,
+    description: descriptionEditor.getHTML(),
+    cost: document.getElementById('event-cost').value,
+    ticket_link: document.getElementById('event-ticket-link').value,
   };
   const url = editingId ? `/api/events/${editingId}` : '/api/events';
   const method = editingId ? 'PUT' : 'POST';

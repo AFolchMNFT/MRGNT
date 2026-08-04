@@ -6,6 +6,7 @@
 <title>Artistas — MRGNT admin</title>
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/admin/admin.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
 </head>
 <body data-admin>
 
@@ -31,9 +32,21 @@
       <label for="artist-genre">Género</label>
       <input class="admin-input" type="text" id="artist-genre">
     </div>
+    <div class="admin-field">
+      <label for="artist-bio">Biografía (opcional)</label>
+      <div class="admin-editor" id="artist-bio-editor"></div>
+    </div>
+    <div class="admin-field">
+      <label for="artist-spotify">Spotify (ID o URL, opcional)</label>
+      <input class="admin-input" type="text" id="artist-spotify" placeholder="https://open.spotify.com/artist/...">
+    </div>
     <div class="admin-checkbox-row">
       <input type="checkbox" id="artist-featured">
       <label for="artist-featured">Destacado (Featured)</label>
+    </div>
+    <div class="admin-checkbox-row">
+      <input type="checkbox" id="artist-show-spotify">
+      <label for="artist-show-spotify">Mostrar reproductor de Spotify</label>
     </div>
     <div class="admin-form-actions">
       <button type="submit" class="btn btn-secondary btn-md" id="artist-submit">Guardar artista</button>
@@ -44,6 +57,7 @@
   <div class="admin-list" id="artists-list"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script type="module" src="/admin/artists.js"></script>
 </body>
 </html>
