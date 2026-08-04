@@ -1,11 +1,11 @@
-name: Preview Deploy (dev)
+name: Deploy to dev environment
 
 on:
   push:
     branches: [dev]
 
 jobs:
-  preview:
+  deploy-dev:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -13,6 +13,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -22,5 +28,9 @@ jobs:
           create_credentials_file: true
           export_environment_variables: true
 
-      - name: Deploy to preview channel
-        run: npx firebase-tools@14 hosting:channel:deploy dev --project mrgnt-504117 --expires 30d
+      - name: Install functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Deploy dev function and hosting
+        run: npx firebase-tools@14 deploy --only functions:apiDev,hosting:dev --project mrgnt-504117

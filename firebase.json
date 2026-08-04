@@ -1,16 +1,30 @@
 {
-  "hosting": {
-    "site": "mrgnt-504117",
-    "public": "public",
-    "ignore": ["firebase.json", "**/.*", "node_modules/**"],
-    "rewrites": [
-      {
-        "source": "/api/**",
-        "function": "api",
-        "region": "us-central1"
-      }
-    ]
-  },
+  "hosting": [
+    {
+      "target": "prod",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "function": "api",
+          "region": "us-central1"
+        }
+      ]
+    },
+    {
+      "target": "dev",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "function": "apiDev",
+          "region": "us-central1"
+        }
+      ]
+    }
+  ],
   "functions": [
     {
       "source": "functions",

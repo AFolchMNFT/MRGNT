@@ -32,4 +32,4 @@ jobs:
         working-directory: functions
 
       - name: Deploy to Firebase
-        run: npx firebase-tools@14 deploy --only hosting,functions,firestore,storage --project mrgnt-504117
+        run: npx firebase-tools@14 deploy --only hosting:prod,functions:api,firestore,storage --project mrgnt-504117
