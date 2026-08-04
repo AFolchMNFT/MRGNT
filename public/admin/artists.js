@@ -8,6 +8,7 @@ const SPOTIFY_ARTIST_HOSTS = ['open.spotify.com', 'spotify.link'];
 let artists = [];
 let editingId = null;
 let spotifyPreviewTimer = null;
+let spotifySearchTimer = null;
 
 const form = document.getElementById('artist-form');
 const errorEl = document.getElementById('artist-error');
@@ -24,6 +25,8 @@ const spotifyPreviewEl = document.getElementById('artist-spotify-preview');
 const spotifyPreviewImageEl = document.getElementById('artist-spotify-preview-image');
 const spotifyPreviewNameEl = document.getElementById('artist-spotify-preview-name');
 const spotifyPreviewTracksEl = document.getElementById('artist-spotify-preview-tracks');
+const spotifySearchInput = document.getElementById('artist-spotify-search');
+const spotifyResultsEl = document.getElementById('artist-spotify-results');
 
 function parseSpotifyId(input) {
   if (!input || !input.trim()) return null;
@@ -92,6 +95,64 @@ spotifyInput.addEventListener('input', () => {
   spotifyPreviewTimer = setTimeout(updateSpotifyPreview, 500);
 });
 
+function clearSpotifyResults() {
+  spotifyResultsEl.hidden = true;
+  spotifyResultsEl.innerHTML = '';
+}
+
+async function runSpotifySearch(query) {
+  if (!query.trim()) {
+    clearSpotifyResults();
+    return;
+  }
+  try {
+    const res = await apiFetch(`/api/spotify/search?q=${encodeURIComponent(query.trim())}`);
+    const results = res.ok ? await res.json() : [];
+
+    if (!results.length) {
+      spotifyResultsEl.innerHTML = '<p class="admin-spotify-results-empty">Sin resultados</p>';
+      spotifyResultsEl.hidden = false;
+      return;
+    }
+
+    spotifyResultsEl.innerHTML = '';
+    results.forEach((artist) => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'admin-spotify-result';
+      row.innerHTML = `
+        ${artist.image ? `<img src="${artist.image}" alt="">` : '<span class="admin-spotify-result-placeholder"></span>'}
+        <span class="admin-spotify-result-body">
+          <strong>${artist.name}</strong>
+          ${artist.genres.length ? `<span>${artist.genres.slice(0, 2).join(', ')}</span>` : ''}
+        </span>
+      `;
+      row.addEventListener('click', () => {
+        spotifyInput.value = artist.id;
+        spotifySearchInput.value = artist.name;
+        clearSpotifyResults();
+        updateSpotifyPreview();
+      });
+      spotifyResultsEl.appendChild(row);
+    });
+    spotifyResultsEl.hidden = false;
+  } catch {
+    clearSpotifyResults();
+  }
+}
+
+spotifySearchInput.addEventListener('input', () => {
+  clearTimeout(spotifySearchTimer);
+  const query = spotifySearchInput.value;
+  spotifySearchTimer = setTimeout(() => runSpotifySearch(query), 400);
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target !== spotifySearchInput && !spotifyResultsEl.contains(e.target)) {
+    clearSpotifyResults();
+  }
+});
+
 previewBtn.addEventListener('click', () => {
   const preview = {
     name: document.getElementById('artist-name').value.trim() || 'Sin nombre',
@@ -116,6 +177,7 @@ function resetForm() {
   headingEl.textContent = 'NUEVO ARTISTA';
   errorEl.hidden = true;
   clearSpotifyPreview();
+  clearSpotifyResults();
 }
 
 function startEdit(artist) {
@@ -127,6 +189,8 @@ function startEdit(artist) {
   document.getElementById('artist-spotify').value = artist.spotifyArtistId || '';
   document.getElementById('artist-featured').checked = artist.featured;
   document.getElementById('artist-show-spotify').checked = artist.showSpotifyEmbed;
+  spotifySearchInput.value = '';
+  clearSpotifyResults();
   if (artist.spotifyArtistId) {
     updateSpotifyPreview();
   } else {

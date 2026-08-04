@@ -37,6 +37,12 @@
       <div class="admin-editor" id="artist-bio-editor"></div>
     </div>
     <div class="admin-field">
+      <label for="artist-spotify-search">Buscar en Spotify</label>
+      <input class="admin-input" type="text" id="artist-spotify-search" placeholder="Nombre del artista…" autocomplete="off">
+      <div class="admin-spotify-results" id="artist-spotify-results" hidden></div>
+      <p class="admin-hint">Selecciona un resultado para completar el campo de abajo, o pega un enlace o ID directamente.</p>
+    </div>
+    <div class="admin-field">
       <label for="artist-spotify">Spotify (ID o URL, opcional)</label>
       <input class="admin-input" type="text" id="artist-spotify" placeholder="https://open.spotify.com/artist/...">
       <p class="admin-hint" id="artist-spotify-status" hidden></p>

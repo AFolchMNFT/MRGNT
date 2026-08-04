@@ -64,8 +64,10 @@ function loadSpotifyExtras(spotifyArtistId, showSpotifyEmbed) {
 
   if (showSpotifyEmbed) {
     const embedWrap = document.getElementById('artista-spotify-embed');
-    embedWrap.innerHTML = `<iframe src="https://open.spotify.com/embed/artist/${spotifyArtistId}" width="100%" height="152" style="border:0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+    embedWrap.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/artist/${spotifyArtistId}?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
     embedWrap.hidden = false;
+    // The embed above already shows the artist's top tracks — skip the redundant list.
+    return;
   }
 
   fetch(`/api/spotify/artist/${spotifyArtistId}/top-tracks`)

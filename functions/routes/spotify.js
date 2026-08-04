@@ -1,4 +1,5 @@
 const express = require('express');
+const { requireAuth } = require('../auth');
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = require('../secrets');
 
 const router = express.Router();
@@ -30,6 +31,37 @@ async function getAppToken(clientId, clientSecret) {
   };
   return tokenCache.value;
 }
+
+router.get('/search', requireAuth, async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (!q) return res.json([]);
+
+  const clientId = SPOTIFY_CLIENT_ID.value();
+  const clientSecret = SPOTIFY_CLIENT_SECRET.value();
+  if (!clientId || !clientSecret) return res.status(503).json({ error: 'Spotify no configurado' });
+
+  try {
+    const token = await getAppToken(clientId, clientSecret);
+    const url = new URL('https://api.spotify.com/v1/search');
+    url.searchParams.set('q', q);
+    url.searchParams.set('type', 'artist');
+    url.searchParams.set('limit', '10');
+    const spotifyRes = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!spotifyRes.ok) return res.status(502).json({ error: 'No se pudo buscar en Spotify' });
+    const body = await spotifyRes.json();
+    const items = (body.artists && body.artists.items) || [];
+    const data = items.map((a) => ({
+      id: a.id,
+      name: a.name,
+      image: a.images && a.images[a.images.length - 1] ? a.images[a.images.length - 1].url : null,
+      genres: a.genres || [],
+      followers: a.followers ? a.followers.total : null,
+    }));
+    res.json(data);
+  } catch {
+    res.status(502).json({ error: 'Error al conectar con Spotify' });
+  }
+});
 
 router.get('/artist/:id', async (req, res) => {
   const { id } = req.params;
