@@ -1,8 +1,13 @@
 import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-common.js';
 import { initRichEditor } from '/admin/rich-editor.js';
 
+const PREVIEW_STORAGE_KEY = 'mrgnt_artist_preview';
+const SPOTIFY_ID_RE = /^[a-zA-Z0-9]{22}$/;
+const SPOTIFY_ARTIST_HOSTS = ['open.spotify.com', 'spotify.link'];
+
 let artists = [];
 let editingId = null;
+let spotifyPreviewTimer = null;
 
 const form = document.getElementById('artist-form');
 const errorEl = document.getElementById('artist-error');
@@ -10,8 +15,96 @@ const disciplineSelect = document.getElementById('artist-discipline');
 const listEl = document.getElementById('artists-list');
 const cancelBtn = document.getElementById('artist-cancel');
 const submitBtn = document.getElementById('artist-submit');
+const previewBtn = document.getElementById('artist-preview');
 const headingEl = document.getElementById('form-heading');
 const bioEditor = initRichEditor(document.getElementById('artist-bio-editor'));
+const spotifyInput = document.getElementById('artist-spotify');
+const spotifyStatusEl = document.getElementById('artist-spotify-status');
+const spotifyPreviewEl = document.getElementById('artist-spotify-preview');
+const spotifyPreviewImageEl = document.getElementById('artist-spotify-preview-image');
+const spotifyPreviewNameEl = document.getElementById('artist-spotify-preview-name');
+const spotifyPreviewTracksEl = document.getElementById('artist-spotify-preview-tracks');
+
+function parseSpotifyId(input) {
+  if (!input || !input.trim()) return null;
+  const trimmed = input.trim();
+  if (SPOTIFY_ID_RE.test(trimmed)) return trimmed;
+  try {
+    const u = new URL(trimmed);
+    if (SPOTIFY_ARTIST_HOSTS.includes(u.hostname)) {
+      const match = u.pathname.match(/^\/(?:intl-[a-zA-Z]{2}\/)?artist\/([a-zA-Z0-9]{22})/);
+      if (match) return match[1];
+    }
+  } catch {
+    // not a valid URL either
+  }
+  return null;
+}
+
+function clearSpotifyPreview() {
+  spotifyStatusEl.hidden = true;
+  spotifyPreviewEl.hidden = true;
+}
+
+async function updateSpotifyPreview() {
+  const id = parseSpotifyId(spotifyInput.value);
+  if (!id) {
+    spotifyPreviewEl.hidden = true;
+    if (spotifyInput.value.trim()) {
+      spotifyStatusEl.textContent = 'ID o URL de Spotify inválido';
+      spotifyStatusEl.hidden = false;
+    } else {
+      spotifyStatusEl.hidden = true;
+    }
+    return;
+  }
+
+  spotifyStatusEl.textContent = 'Buscando en Spotify…';
+  spotifyStatusEl.hidden = false;
+  spotifyPreviewEl.hidden = true;
+
+  try {
+    const [artistRes, tracksRes] = await Promise.all([
+      fetch(`/api/spotify/artist/${id}`),
+      fetch(`/api/spotify/artist/${id}/top-tracks`),
+    ]);
+    if (!artistRes.ok) throw new Error();
+    const artistData = await artistRes.json();
+    const tracks = tracksRes.ok ? await tracksRes.json() : [];
+
+    const imageUrl = artistData.images && artistData.images[0] ? artistData.images[0].url : null;
+    spotifyPreviewImageEl.src = imageUrl || '';
+    spotifyPreviewImageEl.hidden = !imageUrl;
+    spotifyPreviewNameEl.textContent = artistData.name;
+    spotifyPreviewTracksEl.innerHTML = tracks.slice(0, 5).map((t) => `<li>${t.name}</li>`).join('') || '<li>Sin canciones disponibles</li>';
+
+    spotifyStatusEl.hidden = true;
+    spotifyPreviewEl.hidden = false;
+  } catch {
+    spotifyPreviewEl.hidden = true;
+    spotifyStatusEl.textContent = 'No se pudo encontrar ese artista en Spotify';
+    spotifyStatusEl.hidden = false;
+  }
+}
+
+spotifyInput.addEventListener('input', () => {
+  clearTimeout(spotifyPreviewTimer);
+  spotifyPreviewTimer = setTimeout(updateSpotifyPreview, 500);
+});
+
+previewBtn.addEventListener('click', () => {
+  const preview = {
+    name: document.getElementById('artist-name').value.trim() || 'Sin nombre',
+    discipline: disciplineSelect.value,
+    genre: document.getElementById('artist-genre').value,
+    bio: bioEditor.getHTML(),
+    featured: document.getElementById('artist-featured').checked,
+    spotifyArtistId: parseSpotifyId(spotifyInput.value),
+    showSpotifyEmbed: document.getElementById('artist-show-spotify').checked,
+  };
+  sessionStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(preview));
+  window.open('/artista.html?preview=1', '_blank');
+});
 
 function resetForm() {
   editingId = null;
@@ -22,6 +115,7 @@ function resetForm() {
   submitBtn.textContent = 'Guardar artista';
   headingEl.textContent = 'NUEVO ARTISTA';
   errorEl.hidden = true;
+  clearSpotifyPreview();
 }
 
 function startEdit(artist) {
@@ -33,6 +127,11 @@ function startEdit(artist) {
   document.getElementById('artist-spotify').value = artist.spotifyArtistId || '';
   document.getElementById('artist-featured').checked = artist.featured;
   document.getElementById('artist-show-spotify').checked = artist.showSpotifyEmbed;
+  if (artist.spotifyArtistId) {
+    updateSpotifyPreview();
+  } else {
+    clearSpotifyPreview();
+  }
   bioEditor.setHTML(artist.bio || '');
   cancelBtn.hidden = false;
   submitBtn.textContent = 'Guardar cambios';

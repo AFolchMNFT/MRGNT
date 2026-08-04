@@ -1,16 +1,16 @@
 const ALL_TAB = '__all__';
 
 let noticiasTab = null;
-let artistasTab = 'Música';
+let artistasTab = ALL_TAB;
 let allArticles = [];
 let allArtists = [];
 
-function renderTabs(container, tabs, active, onSelect) {
+function renderTabs(container, tabs, active, onSelect, allLabel = 'Todas') {
   container.innerHTML = '';
   tabs.forEach((t) => {
     const btn = document.createElement('button');
     btn.className = 'tab' + (t === active ? ' active' : '');
-    btn.textContent = t === ALL_TAB ? 'Todas' : t;
+    btn.textContent = t === ALL_TAB ? allLabel : t;
     btn.addEventListener('click', () => onSelect(t));
     container.appendChild(btn);
   });
@@ -57,15 +57,19 @@ function renderEvents(events) {
 }
 
 function renderArtistCard(artist) {
-  const card = document.createElement('div');
+  const card = document.createElement(artist.slug ? 'a' : 'div');
   card.className = 'artist-card';
+  if (artist.slug) {
+    card.classList.add('artist-card-link');
+    card.href = `artista.html?slug=${encodeURIComponent(artist.slug)}`;
+  }
   card.innerHTML = `
     <div class="artist-image"></div>
     <div class="artist-body">
       ${artist.featured ? '<span class="artist-featured">Featured</span>' : ''}
       <h4 class="artist-name">${artist.name}</h4>
       <span class="artist-genre">${artist.genre}</span>
-      ${artist.bio ? `<details class="artist-bio"><summary>Leer más</summary>${artist.bio}</details>` : ''}
+      ${artist.slug ? '<span class="artist-card-hint">Ver perfil →</span>' : ''}
     </div>
   `;
 
@@ -83,19 +87,6 @@ function renderArtistCard(artist) {
           img.loading = 'lazy';
           imageEl.appendChild(img);
         }
-        if (artist.showSpotifyEmbed) {
-          const embedWrap = document.createElement('div');
-          embedWrap.className = 'artist-spotify-embed';
-          const iframe = document.createElement('iframe');
-          iframe.src = `https://open.spotify.com/embed/artist/${artist.spotifyArtistId}`;
-          iframe.width = '100%';
-          iframe.height = '152';
-          iframe.style.border = '0';
-          iframe.loading = 'lazy';
-          iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-          embedWrap.appendChild(iframe);
-          card.querySelector('.artist-body').appendChild(embedWrap);
-        }
       })
       .catch(() => {
         // No Spotify data available (not configured yet, bad ID, network error) — keep the placeholder.
@@ -106,14 +97,15 @@ function renderArtistCard(artist) {
 }
 
 function renderArtistas(disciplines) {
-  renderTabs(document.getElementById('artistas-tabs'), disciplines, artistasTab, (t) => {
+  renderTabs(document.getElementById('artistas-tabs'), [ALL_TAB, ...disciplines], artistasTab, (t) => {
     artistasTab = t;
     renderArtistas(disciplines);
-  });
+  }, 'Todos');
 
   const listEl = document.getElementById('artistas-list');
   listEl.innerHTML = '';
-  allArtists.filter((a) => a.discipline === artistasTab).forEach((artist) => {
+  const filtered = artistasTab === ALL_TAB ? allArtists : allArtists.filter((a) => a.discipline === artistasTab);
+  filtered.forEach((artist) => {
     listEl.appendChild(renderArtistCard(artist));
   });
 }

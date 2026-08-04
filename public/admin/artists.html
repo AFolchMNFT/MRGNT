@@ -39,6 +39,14 @@
     <div class="admin-field">
       <label for="artist-spotify">Spotify (ID o URL, opcional)</label>
       <input class="admin-input" type="text" id="artist-spotify" placeholder="https://open.spotify.com/artist/...">
+      <p class="admin-hint" id="artist-spotify-status" hidden></p>
+      <div class="admin-spotify-preview" id="artist-spotify-preview" hidden>
+        <img class="admin-spotify-preview-image" id="artist-spotify-preview-image" alt="">
+        <div class="admin-spotify-preview-body">
+          <strong id="artist-spotify-preview-name"></strong>
+          <ul class="admin-spotify-preview-tracks" id="artist-spotify-preview-tracks"></ul>
+        </div>
+      </div>
     </div>
     <div class="admin-checkbox-row">
       <input type="checkbox" id="artist-featured">
@@ -50,6 +58,7 @@
     </div>
     <div class="admin-form-actions">
       <button type="submit" class="btn btn-secondary btn-md" id="artist-submit">Guardar artista</button>
+      <button type="button" class="btn btn-secondary btn-md" id="artist-preview">Vista previa</button>
       <button type="button" class="admin-btn-link" id="artist-cancel" hidden>Cancelar edición</button>
     </div>
   </form>

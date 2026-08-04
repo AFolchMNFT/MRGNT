@@ -103,6 +103,19 @@ body[data-admin] { min-height: 100vh; }
 }
 .admin-toggle-btn.active { background: var(--color-rust-500); color: var(--text-inverse); }
 .admin-hint { font-family: var(--font-body); font-size: var(--text-sm); color: var(--text-muted); margin: 6px 0 0; }
+.admin-spotify-preview {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--border-default);
+  background: var(--color-cream-100);
+}
+.admin-spotify-preview-image { width: 64px; height: 64px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; background: var(--surface-card); }
+.admin-spotify-preview-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.admin-spotify-preview-body strong { font-family: var(--font-body); font-size: var(--text-base); color: var(--text-body); }
+.admin-spotify-preview-tracks { margin: 4px 0 0; padding-left: 18px; font-family: var(--font-body); font-size: var(--text-sm); color: var(--text-muted); }
 .admin-media-current { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 8px; }
 .admin-media-current img, .admin-media-current video {
   max-width: 240px;
