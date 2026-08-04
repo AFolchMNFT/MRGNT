@@ -1,0 +1,26 @@
+name: Preview Deploy (dev)
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/993617480326/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: firebase-adminsdk-fbsvc@mrgnt-504117.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Deploy to preview channel
+        run: npx firebase-tools@14 hosting:channel:deploy dev --project mrgnt-504117 --expires 30d
