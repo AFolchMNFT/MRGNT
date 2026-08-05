@@ -60,6 +60,9 @@ body {
   margin: 0;
   background: var(--surface-page);
   font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 a { color: var(--text-link); }
@@ -67,7 +70,7 @@ a:hover { color: var(--color-rust-600); }
 
 [hidden] { display: none !important; }
 
-.container { font-family: var(--font-body); }
+.container { font-family: var(--font-body); display: flex; flex-direction: column; flex: 1; }
 
 /* NAV */
 .nav {
@@ -414,6 +417,7 @@ a.artista-track:hover { background: var(--color-cream-100); }
 
 /* FOOTER */
 .footer {
+  margin-top: auto;
   padding: 32px;
   background: var(--color-ink-900);
   border-top: var(--border-width-md) solid var(--color-rust-500);
@@ -586,4 +590,34 @@ a.artista-track:hover { background: var(--color-cream-100); }
   .hero h1 { font-size: var(--text-3xl); }
   .page-header h1 { font-size: var(--text-2xl); }
   .eventos-month .event-time { width: auto; }
+
+  /* Category tabs (Noticias / Artistas) become a swipeable single-line carousel */
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; }
+
+  /* Center card grids that wrap down to a single column */
+  .posts-grid,
+  .artists-grid {
+    justify-content: center;
+  }
+
+  /* Homepage artists teaser: horizontal-scrolling carousel instead of stacking */
+  body[data-page="inicio"] #artistas-list.artists-grid {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 8px;
+  }
+  body[data-page="inicio"] #artistas-list.artists-grid .artist-card {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
 }

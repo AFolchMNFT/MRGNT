@@ -23,6 +23,7 @@ function toClientSubmission(doc) {
     ticket_link: d.ticket_link || null,
     embedUrl: d.embed_url || null,
     locationUrl: d.location_url || null,
+    locationEmbedUrl: d.location_embed_url || null,
     submitterName: d.submitter_name,
     submitterEmail: d.submitter_email,
   };
@@ -39,7 +40,7 @@ router.post('/', async (req, res) => {
   if (!body.submitter_email || !body.submitter_email.trim()) return res.status(400).json({ error: 'Tu email es requerido' });
 
   const docData = {
-    ...buildDocData(body),
+    ...(await buildDocData(body)),
     submitter_name: body.submitter_name.trim(),
     submitter_email: body.submitter_email.trim(),
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -69,7 +70,7 @@ router.post('/:id/approve', requireAuth, async (req, res) => {
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
 
-  const docData = buildDocData(snap.data());
+  const docData = await buildDocData(snap.data());
   try {
     const eventSnap = await createEventDoc(docData);
     await ref.delete();

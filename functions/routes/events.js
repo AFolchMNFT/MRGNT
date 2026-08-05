@@ -5,6 +5,7 @@ const { isoToDisplay, dayAbbrev } = require('../lib/dateFormat');
 const { slugify } = require('../lib/slugify');
 const { sanitizeRichText } = require('../lib/sanitize');
 const { detectEmbedProvider } = require('../lib/embeds');
+const { resolveMapsEmbedUrl } = require('../lib/maps');
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ function toClient(doc) {
     embedUrl: d.embed_url || null,
     embedProvider: d.embed_provider || null,
     locationUrl: d.location_url || null,
+    locationEmbedUrl: d.location_embed_url || null,
   };
 }
 
@@ -60,9 +62,10 @@ function validate(body) {
   return null;
 }
 
-function buildDocData(body) {
+async function buildDocData(body) {
   const { event_date, time, stage, artist, tag = '', title = '', description = '', cost = '', ticket_link = '', embed_url = '', location_url = '' } = body;
   const embedUrl = embed_url.trim() || null;
+  const locationUrl = location_url.trim() || null;
   return {
     event_date,
     time: time.trim(),
@@ -75,7 +78,8 @@ function buildDocData(body) {
     ticket_link: ticket_link.trim() || null,
     embed_url: embedUrl,
     embed_provider: embedUrl ? detectEmbedProvider(embedUrl) : null,
-    location_url: location_url.trim() || null,
+    location_url: locationUrl,
+    location_embed_url: locationUrl ? await resolveMapsEmbedUrl(locationUrl) : null,
   };
 }
 
@@ -110,11 +114,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Resolves a Google Maps link into an embeddable URL on demand — used as a fallback by the
+// event page for events saved before location_embed_url existed, or if resolving it at save
+// time failed (e.g. a transient network error).
+router.get('/resolve-map', async (req, res) => {
+  const url = typeof req.query.url === 'string' ? req.query.url.trim() : '';
+  if (!url) return res.status(400).json({ error: 'Falta el parámetro url' });
+  const embedUrl = await resolveMapsEmbedUrl(url);
+  res.json({ embedUrl });
+});
+
 router.post('/', requireAuth, async (req, res) => {
   const error = validate(req.body || {});
   if (error) return res.status(400).json({ error });
 
-  const docData = buildDocData(req.body);
+  const docData = await buildDocData(req.body);
 
   try {
     const snap = await createEventDoc(docData);
@@ -132,7 +146,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   const error = validate(req.body || {});
   if (error) return res.status(400).json({ error });
 
-  const docData = buildDocData(req.body);
+  const docData = await buildDocData(req.body);
   const existing = snap.data();
 
   try {

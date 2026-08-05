@@ -45,7 +45,7 @@ function buildMapsEmbedUrl(locationUrl) {
   }
 }
 
-function renderMap(ev) {
+async function renderMap(ev) {
   const mapEl = document.getElementById('evento-map');
   const iframeEl = document.getElementById('evento-map-iframe');
   const linkEl = document.getElementById('evento-map-link');
@@ -59,13 +59,35 @@ function renderMap(ev) {
   linkEl.href = ev.locationUrl;
   linkEl.hidden = false;
 
-  const embedSrc = buildMapsEmbedUrl(ev.locationUrl);
-  if (embedSrc) {
+  const showMap = (embedSrc) => {
+    if (!embedSrc) {
+      mapEl.hidden = true;
+      return;
+    }
     iframeEl.src = embedSrc;
     mapEl.hidden = false;
-  } else {
-    // Short links (e.g. maps.app.goo.gl) can't be resolved to an embeddable URL client-side;
-    // fall back to just the "open in Google Maps" link above.
+  };
+
+  if (ev.locationEmbedUrl) {
+    // Already resolved server-side when the event was saved.
+    showMap(ev.locationEmbedUrl);
+    return;
+  }
+
+  // Best-effort client-side extraction (works for full google.com/maps links, not short ones).
+  const clientEmbedSrc = buildMapsEmbedUrl(ev.locationUrl);
+  if (clientEmbedSrc) {
+    showMap(clientEmbedSrc);
+    return;
+  }
+
+  // Event saved before location_embed_url existed (or resolving it failed at save time) and
+  // the link is a short one (maps.app.goo.gl, etc.) — ask the server to resolve it on demand.
+  try {
+    const res = await fetch(`/api/events/resolve-map?url=${encodeURIComponent(ev.locationUrl)}`);
+    const body = await res.json();
+    showMap(body.embedUrl);
+  } catch {
     mapEl.hidden = true;
   }
 }
