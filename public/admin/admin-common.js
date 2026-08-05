@@ -41,6 +41,7 @@ export function renderAdminNav(active) {
     <div class="admin-nav-links">
       <a href="/admin/artists.html" class="admin-nav-link${active === 'artists' ? ' active' : ''}">Artistas</a>
       <a href="/admin/events.html" class="admin-nav-link${active === 'events' ? ' active' : ''}">Eventos</a>
+      <a href="/admin/event-submissions.html" class="admin-nav-link${active === 'submissions' ? ' active' : ''}">Solicitudes</a>
       <a href="/admin/articles.html" class="admin-nav-link${active === 'articles' ? ' active' : ''}">Noticias</a>
       <button type="button" class="admin-nav-logout" id="admin-logout">Cerrar sesión</button>
     </div>

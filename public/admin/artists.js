@@ -107,7 +107,13 @@ async function runSpotifySearch(query) {
   }
   try {
     const res = await apiFetch(`/api/spotify/search?q=${encodeURIComponent(query.trim())}`);
-    const results = res.ok ? await res.json() : [];
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      spotifyResultsEl.innerHTML = `<p class="admin-spotify-results-empty">${body.error || 'No se pudo buscar en Spotify'}</p>`;
+      spotifyResultsEl.hidden = false;
+      return;
+    }
+    const results = await res.json();
 
     if (!results.length) {
       spotifyResultsEl.innerHTML = '<p class="admin-spotify-results-empty">Sin resultados</p>';
@@ -136,8 +142,10 @@ async function runSpotifySearch(query) {
       spotifyResultsEl.appendChild(row);
     });
     spotifyResultsEl.hidden = false;
-  } catch {
-    clearSpotifyResults();
+  } catch (err) {
+    console.error('Spotify search failed:', err);
+    spotifyResultsEl.innerHTML = '<p class="admin-spotify-results-empty">No se pudo buscar en Spotify (revisa la consola)</p>';
+    spotifyResultsEl.hidden = false;
   }
 }
 

@@ -1,0 +1,94 @@
+const express = require('express');
+const admin = require('firebase-admin');
+const { requireAuth } = require('../auth');
+const { isoToDisplay, dayAbbrev } = require('../lib/dateFormat');
+const { validate, buildDocData, createEventDoc, toClient } = require('./events');
+const { notifyAdminsOfEventSubmission } = require('../lib/mail');
+
+const router = express.Router();
+
+function toClientSubmission(doc) {
+  const d = doc.data();
+  return {
+    id: doc.id,
+    event_date: d.event_date,
+    date: isoToDisplay(d.event_date),
+    day: dayAbbrev(d.event_date),
+    time: d.time,
+    stage: d.stage,
+    artist: d.artist,
+    tag: d.tag || '',
+    title: d.title || null,
+    description: d.description || null,
+    cost: d.cost || null,
+    ticket_link: d.ticket_link || null,
+    embedUrl: d.embed_url || null,
+    locationUrl: d.location_url || null,
+    submitterName: d.submitter_name,
+    submitterEmail: d.submitter_email,
+  };
+}
+
+router.post('/', async (req, res) => {
+  const body = req.body || {};
+  // Honeypot field: real users never fill this hidden input, bots often do.
+  if (body.website) return res.status(400).json({ error: 'Solicitud inválida' });
+
+  const error = validate(body);
+  if (error) return res.status(400).json({ error });
+  if (!body.submitter_name || !body.submitter_name.trim()) return res.status(400).json({ error: 'Tu nombre es requerido' });
+  if (!body.submitter_email || !body.submitter_email.trim()) return res.status(400).json({ error: 'Tu email es requerido' });
+
+  const docData = {
+    ...buildDocData(body),
+    submitter_name: body.submitter_name.trim(),
+    submitter_email: body.submitter_email.trim(),
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+
+  try {
+    const ref = await admin.firestore().collection('event_submissions').add(docData);
+    const snap = await ref.get();
+    const submission = toClientSubmission(snap);
+    res.status(201).json(submission);
+    notifyAdminsOfEventSubmission(submission, req).catch((err) => {
+      console.error('No se pudo notificar a los administradores:', err);
+    });
+  } catch {
+    res.status(500).json({ error: 'Error al enviar el evento' });
+  }
+});
+
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const snap = await admin.firestore().collection('event_submissions').orderBy('createdAt', 'asc').get();
+    res.json(snap.docs.map(toClientSubmission));
+  } catch {
+    res.status(500).json({ error: 'Error al obtener solicitudes' });
+  }
+});
+
+router.post('/:id/approve', requireAuth, async (req, res) => {
+  const ref = admin.firestore().collection('event_submissions').doc(req.params.id);
+  const snap = await ref.get();
+  if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
+
+  const docData = buildDocData(snap.data());
+  try {
+    const eventSnap = await createEventDoc(docData);
+    await ref.delete();
+    res.status(201).json(toClient(eventSnap));
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Error al aprobar el evento' });
+  }
+});
+
+router.delete('/:id', requireAuth, async (req, res) => {
+  const ref = admin.firestore().collection('event_submissions').doc(req.params.id);
+  const snap = await ref.get();
+  if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
+  await ref.delete();
+  res.status(204).end();
+});
+
+module.exports = router;

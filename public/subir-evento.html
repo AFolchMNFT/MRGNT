@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sube tu evento — MRGNT</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="eventos">
+<div class="container">
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><img src="assets/logo.png" alt="MRGNT" class="nav-logo"></a>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <div class="nav-links">
+      <a href="index.html#inicio" class="nav-link" data-page="inicio">Inicio</a>
+      <a href="noticias.html" class="nav-link" data-page="noticias">Noticias</a>
+      <a href="eventos.html" class="nav-link" data-page="eventos">Eventos</a>
+      <a href="artistas.html" class="nav-link" data-page="artistas">Artistas</a>
+      <a href="convocatoria.html" class="nav-link" data-page="convocatoria">Convocatoria</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="page-header">
+  <a href="eventos.html" class="noticia-back">← Volver a eventos</a>
+  <h1>SUBE TU EVENTO</h1>
+  <p>¿Organizas un evento y quieres que aparezca en la cartelera de MRGNT? Cuéntanos los detalles y lo revisaremos antes de publicarlo.</p>
+</section>
+
+<!-- FORM -->
+<section class="page-content">
+  <div class="card event-submit-card">
+    <form id="event-submit-form" class="event-submit-form">
+      <p class="event-submit-message" id="event-submit-error" hidden></p>
+      <p class="event-submit-message event-submit-message-success" id="event-submit-success" hidden></p>
+
+      <input type="text" id="event-website" name="website" class="event-submit-honeypot" tabindex="-1" autocomplete="off">
+
+      <div class="event-submit-row">
+        <div class="event-submit-field">
+          <label for="event-date">Fecha</label>
+          <input class="event-submit-input" type="date" id="event-date" required>
+        </div>
+        <div class="event-submit-field">
+          <label for="event-time">Hora</label>
+          <input class="event-submit-input" type="text" id="event-time" placeholder="8:00 PM" required>
+        </div>
+      </div>
+      <div class="event-submit-row">
+        <div class="event-submit-field">
+          <label for="event-stage">Lugar</label>
+          <input class="event-submit-input" type="text" id="event-stage" placeholder="Nombre del lugar, foro o escenario" required>
+        </div>
+        <div class="event-submit-field">
+          <label for="event-artist">Artista / acto</label>
+          <input class="event-submit-input" type="text" id="event-artist" required>
+        </div>
+      </div>
+      <div class="event-submit-field">
+        <label for="event-location-url">Ubicación en Google Maps (opcional)</label>
+        <input class="event-submit-input" type="url" id="event-location-url" placeholder="https://maps.app.goo.gl/...">
+        <p class="event-submit-hint">En Google Maps, busca el lugar exacto y usa "Compartir" → "Copiar enlace".</p>
+      </div>
+      <div class="event-submit-field">
+        <label for="event-title">Título del evento (opcional)</label>
+        <input class="event-submit-input" type="text" id="event-title" placeholder="Solo si el evento necesita un título distinto al artista/acto">
+      </div>
+      <div class="event-submit-field">
+        <label for="event-tag">Etiqueta (opcional)</label>
+        <input class="event-submit-input" type="text" id="event-tag" placeholder="Headliner, Benéfico, etc.">
+      </div>
+      <div class="event-submit-field">
+        <label for="event-description">Descripción (opcional)</label>
+        <textarea class="event-submit-input event-submit-textarea" id="event-description"></textarea>
+      </div>
+      <div class="event-submit-row">
+        <div class="event-submit-field">
+          <label for="event-cost">Costo (opcional)</label>
+          <input class="event-submit-input" type="text" id="event-cost" placeholder="Gratis, $200 MXN, etc.">
+        </div>
+        <div class="event-submit-field">
+          <label for="event-ticket-link">Enlace de boletos (opcional)</label>
+          <input class="event-submit-input" type="url" id="event-ticket-link" placeholder="https://...">
+        </div>
+      </div>
+
+      <hr class="event-submit-divider">
+
+      <div class="event-submit-row">
+        <div class="event-submit-field">
+          <label for="event-submitter-name">Tu nombre</label>
+          <input class="event-submit-input" type="text" id="event-submitter-name" required>
+        </div>
+        <div class="event-submit-field">
+          <label for="event-submitter-email">Tu email</label>
+          <input class="event-submit-input" type="email" id="event-submitter-email" placeholder="Para contactarte si tenemos dudas" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-secondary btn-md" id="event-submit-btn">Enviar evento</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-logo">MRGNT</span>
+  <div class="footer-links">
+    <a href="index.html#inicio">Inicio</a>
+    <a href="noticias.html">Noticias</a>
+    <a href="eventos.html">Eventos</a>
+    <a href="artistas.html">Artistas</a>
+    <a href="convocatoria.html">Convocatoria</a>
+  </div>
+  <span class="footer-copy">© 2026 MRGNT</span>
+</footer>
+
+</div>
+<script src="nav.js"></script>
+<script src="subir-evento.js"></script>
+</body>
+</html>

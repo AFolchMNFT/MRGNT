@@ -29,11 +29,13 @@ function startEdit(ev) {
   document.getElementById('event-date').value = ev.event_date;
   document.getElementById('event-time').value = ev.time;
   document.getElementById('event-stage').value = ev.stage;
+  document.getElementById('event-location-url').value = ev.locationUrl || '';
   document.getElementById('event-artist').value = ev.artist;
   document.getElementById('event-title').value = ev.title || '';
   document.getElementById('event-tag').value = ev.tag;
   document.getElementById('event-cost').value = ev.cost || '';
   document.getElementById('event-ticket-link').value = ev.ticket_link || '';
+  document.getElementById('event-embed-url').value = ev.embedUrl || '';
   descriptionEditor.setHTML(ev.description || '');
   cancelBtn.hidden = false;
   submitBtn.textContent = 'Guardar cambios';
@@ -54,12 +56,16 @@ function renderList() {
     const verLink = ev.slug
       ? `<a href="/evento.html?slug=${encodeURIComponent(ev.slug)}" target="_blank">Ver</a>`
       : '';
+    const mapLink = ev.locationUrl
+      ? `<a href="${ev.locationUrl}" target="_blank" rel="noopener">Mapa</a>`
+      : '';
     row.innerHTML = `
       <div class="admin-row-main">
         <div class="admin-row-title">${ev.artist}${ev.tag ? ' · ' + ev.tag : ''}</div>
         <div class="admin-row-sub">${ev.day} ${ev.date} · ${ev.time} — ${ev.stage}</div>
       </div>
       <div class="admin-row-actions">
+        ${mapLink}
         ${verLink}
         <button type="button" class="admin-edit">Editar</button>
         <button type="button" class="admin-delete">Eliminar</button>
@@ -93,12 +99,14 @@ form.addEventListener('submit', async (e) => {
     event_date: document.getElementById('event-date').value,
     time: document.getElementById('event-time').value,
     stage: document.getElementById('event-stage').value,
+    location_url: document.getElementById('event-location-url').value,
     artist: document.getElementById('event-artist').value,
     title: document.getElementById('event-title').value,
     tag: document.getElementById('event-tag').value,
     description: descriptionEditor.getHTML(),
     cost: document.getElementById('event-cost').value,
     ticket_link: document.getElementById('event-ticket-link').value,
+    embed_url: document.getElementById('event-embed-url').value,
   };
   const url = editingId ? `/api/events/${editingId}` : '/api/events';
   const method = editingId ? 'PUT' : 'POST';

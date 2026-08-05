@@ -5,6 +5,7 @@
   "description": "MRGNT site + admin panel (Firebase)",
   "scripts": {
     "dev": "firebase emulators:start --import=./emulator-data --export-on-exit",
+    "dev:local": "node dev-local.js",
     "deploy": "firebase deploy --only hosting,functions,firestore:rules,storage:rules",
     "create-admin": "cd functions && node scripts/create-admin.js",
     "migrate": "cd functions && node scripts/migrate-seed-data.js",
