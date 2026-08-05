@@ -606,32 +606,21 @@ a.artista-track:hover { background: var(--color-cream-100); }
   .artists-grid {
     justify-content: center;
   }
+}
 
-  /* Homepage artists teaser: horizontal-scrolling carousel instead of stacking */
-  body[data-page="inicio"] #artistas-list.artists-grid {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    padding-bottom: 8px;
-  }
-  body[data-page="inicio"] #artistas-list.artists-grid .artist-card {
-    flex-shrink: 0;
-    scroll-snap-align: start;
-  }
-
-  /* Homepage noticias teaser: horizontal-scrolling carousel instead of stacking */
-  body[data-page="inicio"] #noticias-posts.posts-grid {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    padding-bottom: 8px;
-  }
-  body[data-page="inicio"] #noticias-posts.posts-grid .post-card {
-    flex-shrink: 0;
-    scroll-snap-align: start;
-  }
+/* Homepage artists & noticias teasers: always a horizontal-scrolling carousel
+   (single line), at every viewport width — not just mobile. */
+body[data-page="inicio"] #artistas-list.artists-grid,
+body[data-page="inicio"] #noticias-posts.posts-grid {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  padding-bottom: 8px;
+}
+body[data-page="inicio"] #artistas-list.artists-grid .artist-card,
+body[data-page="inicio"] #noticias-posts.posts-grid .post-card {
+  flex-shrink: 0;
+  scroll-snap-align: start;
 }
