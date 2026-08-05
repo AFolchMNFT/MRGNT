@@ -3,7 +3,6 @@ const admin = require('firebase-admin');
 const { requireAuth } = require('../auth');
 const { isoToDisplay, dayAbbrev } = require('../lib/dateFormat');
 const { validate, buildDocData, createEventDoc, toClient } = require('./events');
-const { notifyAdminsOfEventSubmission } = require('../lib/mail');
 
 const router = express.Router();
 
@@ -51,9 +50,6 @@ router.post('/', async (req, res) => {
     const snap = await ref.get();
     const submission = toClientSubmission(snap);
     res.status(201).json(submission);
-    notifyAdminsOfEventSubmission(submission, req).catch((err) => {
-      console.error('No se pudo notificar a los administradores:', err);
-    });
   } catch {
     res.status(500).json({ error: 'Error al enviar el evento' });
   }
