@@ -620,4 +620,18 @@ a.artista-track:hover { background: var(--color-cream-100); }
     flex-shrink: 0;
     scroll-snap-align: start;
   }
+
+  /* Homepage noticias teaser: horizontal-scrolling carousel instead of stacking */
+  body[data-page="inicio"] #noticias-posts.posts-grid {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 8px;
+  }
+  body[data-page="inicio"] #noticias-posts.posts-grid .post-card {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
 }
