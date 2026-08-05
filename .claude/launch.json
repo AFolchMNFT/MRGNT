@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mrgnt-emulators",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start"],
+      "port": 5050
+    }
+  ]
+}

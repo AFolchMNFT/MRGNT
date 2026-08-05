@@ -1,15 +1,16 @@
-name: Deploy to Firebase
+name: Deploy to dev environment
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
 
 jobs:
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -31,5 +32,5 @@ jobs:
         run: npm ci
         working-directory: functions
 
-      - name: Deploy to Firebase
-        run: npx firebase-tools@14 deploy --only hosting:prod,functions:api,firestore,storage --project mrgnt-504117
+      - name: Deploy dev function and hosting
+        run: npx firebase-tools@14 deploy --only functions:apiDev,hosting:dev --project mrgnt-504117

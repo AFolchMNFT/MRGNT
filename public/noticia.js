@@ -9,6 +9,73 @@ function renderNotFound() {
   document.getElementById('noticia-body').innerHTML = '<p>Este artículo no existe o fue eliminado.</p>';
 }
 
+function extractYouTubeId(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('/')[0];
+    if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
+    return u.searchParams.get('v');
+  } catch {
+    return null;
+  }
+}
+
+function injectScriptOnce(src) {
+  if (document.querySelector(`script[src="${src}"]`)) return;
+  const script = document.createElement('script');
+  script.src = src;
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+function renderEmbed(article) {
+  const embedEl = document.getElementById('noticia-embed');
+  embedEl.innerHTML = '';
+  if (!article.embedUrl || !article.embedProvider) {
+    embedEl.hidden = true;
+    return;
+  }
+
+  if (article.embedProvider === 'youtube') {
+    const videoId = extractYouTubeId(article.embedUrl);
+    if (!videoId) {
+      embedEl.hidden = true;
+      return;
+    }
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+    iframe.title = article.title;
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.className = 'embed-youtube';
+    embedEl.appendChild(iframe);
+  } else if (article.embedProvider === 'instagram') {
+    const bq = document.createElement('blockquote');
+    bq.className = 'instagram-media';
+    bq.setAttribute('data-instgrm-permalink', article.embedUrl);
+    embedEl.appendChild(bq);
+    injectScriptOnce('https://www.instagram.com/embed.js');
+    if (window.instgrm) window.instgrm.Embeds.process();
+  } else if (article.embedProvider === 'tiktok') {
+    const bq = document.createElement('blockquote');
+    bq.className = 'tiktok-embed';
+    bq.setAttribute('cite', article.embedUrl);
+    embedEl.appendChild(bq);
+    injectScriptOnce('https://www.tiktok.com/embed.js');
+  } else if (article.embedProvider === 'twitter') {
+    const bq = document.createElement('blockquote');
+    bq.className = 'twitter-tweet';
+    const a = document.createElement('a');
+    a.href = article.embedUrl;
+    bq.appendChild(a);
+    embedEl.appendChild(bq);
+    injectScriptOnce('https://platform.twitter.com/widgets.js');
+    if (window.twttr && window.twttr.widgets) window.twttr.widgets.load();
+  }
+
+  embedEl.hidden = false;
+}
+
 function renderNoticia(article) {
   document.title = `${article.title} — MRGNT`;
   document.getElementById('noticia-category').textContent = article.category;
@@ -28,17 +95,25 @@ function renderNoticia(article) {
     mediaEl.hidden = true;
   }
 
+  renderEmbed(article);
+
   const bodyEl = document.getElementById('noticia-body');
   bodyEl.innerHTML = '';
   const note = (article.note || '').replace(/\r\n/g, '\n');
-  note.split(/\n{2,}/).forEach((paragraph) => {
-    const p = document.createElement('p');
-    paragraph.split('\n').forEach((line, i) => {
-      if (i > 0) p.appendChild(document.createElement('br'));
-      p.appendChild(document.createTextNode(line));
+  if (/<[a-z][\s\S]*>/i.test(note)) {
+    // Rich-text content: already sanitized server-side before it was stored.
+    bodyEl.innerHTML = note;
+  } else {
+    // Legacy plain-text note (predates the rich-text editor): render safely as before.
+    note.split(/\n{2,}/).forEach((paragraph) => {
+      const p = document.createElement('p');
+      paragraph.split('\n').forEach((line, i) => {
+        if (i > 0) p.appendChild(document.createElement('br'));
+        p.appendChild(document.createTextNode(line));
+      });
+      bodyEl.appendChild(p);
     });
-    bodyEl.appendChild(p);
-  });
+  }
 }
 
 fetch('/api/articles')

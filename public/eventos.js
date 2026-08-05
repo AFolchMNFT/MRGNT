@@ -34,8 +34,9 @@ function renderEventos(events) {
     list.className = 'events-list';
     group.events.forEach((ev) => {
       const [day, month] = ev.date.split(' ');
-      const row = document.createElement('div');
+      const row = document.createElement(ev.slug ? 'a' : 'div');
       row.className = 'event-row';
+      if (ev.slug) row.href = `evento.html?slug=${encodeURIComponent(ev.slug)}`;
       row.innerHTML = `
         <span class="event-time">${ev.day} ${day} ${month.toUpperCase()} · ${ev.time}</span>
         <div class="event-main">

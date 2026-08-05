@@ -1,3 +1,5 @@
+const ALL_TAB = '__all__';
+
 let noticiasTab = null;
 let allArticles = [];
 
@@ -6,21 +8,22 @@ function renderTabs(container, tabs, active, onSelect) {
   tabs.forEach((t) => {
     const btn = document.createElement('button');
     btn.className = 'tab' + (t === active ? ' active' : '');
-    btn.textContent = t;
+    btn.textContent = t === ALL_TAB ? 'Todas' : t;
     btn.addEventListener('click', () => onSelect(t));
     container.appendChild(btn);
   });
 }
 
 function renderArticles(categories) {
-  renderTabs(document.getElementById('noticias-tabs'), categories, noticiasTab, (t) => {
+  renderTabs(document.getElementById('noticias-tabs'), [ALL_TAB, ...categories], noticiasTab, (t) => {
     noticiasTab = t;
     renderArticles(categories);
   });
 
   const postsEl = document.getElementById('noticias-posts');
   postsEl.innerHTML = '';
-  allArticles.filter((a) => a.category === noticiasTab).forEach((post) => {
+  const filtered = noticiasTab === ALL_TAB ? allArticles : allArticles.filter((a) => a.category === noticiasTab);
+  filtered.forEach((post) => {
     const card = document.createElement('div');
     card.className = 'card article-card';
     card.innerHTML = `
@@ -37,7 +40,7 @@ Promise.all([
   fetch('/api/meta').then((res) => res.json()),
   fetch('/api/articles').then((res) => res.json()),
 ]).then(([meta, articles]) => {
-  noticiasTab = meta.noticiasCategories[0];
+  noticiasTab = ALL_TAB;
   allArticles = articles;
   renderArticles(meta.noticiasCategories);
 });

@@ -6,6 +6,7 @@
 <title>Eventos — MRGNT admin</title>
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/admin/admin.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
 </head>
 <body data-admin>
 
@@ -38,8 +39,26 @@
       </div>
     </div>
     <div class="admin-field">
+      <label for="event-title">Título (opcional)</label>
+      <input class="admin-input" type="text" id="event-title" placeholder="Solo si el evento necesita un título distinto al artista/acto">
+    </div>
+    <div class="admin-field">
       <label for="event-tag">Etiqueta (opcional)</label>
       <input class="admin-input" type="text" id="event-tag" placeholder="Headliner, Destacado, etc.">
+    </div>
+    <div class="admin-field">
+      <label for="event-description">Descripción (opcional)</label>
+      <div class="admin-editor" id="event-description-editor"></div>
+    </div>
+    <div class="admin-form-row">
+      <div class="admin-field">
+        <label for="event-cost">Costo (opcional)</label>
+        <input class="admin-input" type="text" id="event-cost" placeholder="Gratis, $200 MXN, etc.">
+      </div>
+      <div class="admin-field">
+        <label for="event-ticket-link">Enlace de boletos (opcional)</label>
+        <input class="admin-input" type="url" id="event-ticket-link" placeholder="https://...">
+      </div>
     </div>
     <div class="admin-form-actions">
       <button type="submit" class="btn btn-secondary btn-md" id="event-submit">Guardar evento</button>
@@ -50,6 +69,7 @@
   <div class="admin-list" id="events-list"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script type="module" src="/admin/events.js"></script>
 </body>
 </html>

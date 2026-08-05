@@ -6,6 +6,7 @@ server/data/*.db-wal
 public/uploads/*
 !public/uploads/.gitkeep
 functions/node_modules/
+functions/.secret.local
 emulator-data/
 .firebase/
 firebase-debug.log

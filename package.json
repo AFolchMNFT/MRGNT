@@ -7,6 +7,9 @@
     "dev": "firebase emulators:start --import=./emulator-data --export-on-exit",
     "deploy": "firebase deploy --only hosting,functions,firestore:rules,storage:rules",
     "create-admin": "cd functions && node scripts/create-admin.js",
-    "migrate": "cd functions && node scripts/migrate-seed-data.js"
+    "migrate": "cd functions && node scripts/migrate-seed-data.js",
+    "migrate-notes": "cd functions && node scripts/migrate-article-notes-to-html.js",
+    "backfill-event-slugs": "cd functions && node scripts/backfill-event-slugs.js",
+    "backfill-artist-slugs": "cd functions && node scripts/backfill-artist-slugs.js"
   }
 }

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Noticia — MRGNT</title>
+<title>Artista — MRGNT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="noticias">
+<body data-page="artistas">
 <div class="container">
 
 <!-- NAV -->
@@ -30,18 +30,22 @@
 
 <!-- HEADER -->
 <section class="page-header">
-  <a href="noticias.html" class="noticia-back">← Volver a noticias</a>
-  <span class="badge badge-rust" id="noticia-category"></span>
-  <h1 id="noticia-title"></h1>
-  <p class="article-meta" id="noticia-meta"></p>
+  <a href="artistas.html" class="noticia-back">← Volver a artistas</a>
+  <span class="artista-featured" id="artista-featured" hidden>Featured</span>
+  <h1 id="artista-title"></h1>
+  <p class="article-meta" id="artista-meta"></p>
 </section>
 
-<!-- ARTICLE -->
+<!-- ARTIST -->
 <section class="page-content">
   <div class="card noticia-card">
-    <div class="noticia-media" id="noticia-media" hidden></div>
-    <div class="noticia-embed" id="noticia-embed" hidden></div>
-    <div class="noticia-body" id="noticia-body"></div>
+    <div class="artista-hero-image" id="artista-hero-image" hidden></div>
+    <div class="noticia-body" id="artista-body"></div>
+    <div class="artista-spotify-embed" id="artista-spotify-embed" hidden></div>
+    <div class="artista-tracks" id="artista-tracks" hidden>
+      <h3>Escucha</h3>
+      <div class="artista-tracks-list" id="artista-tracks-list"></div>
+    </div>
   </div>
 </section>
 
@@ -60,6 +64,6 @@
 
 </div>
 <script src="nav.js"></script>
-<script src="noticia.js"></script>
+<script src="artista.js"></script>
 </body>
 </html>
