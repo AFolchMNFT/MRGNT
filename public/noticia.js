@@ -116,10 +116,47 @@ function renderNoticia(article) {
   }
 }
 
+function renderRelated(article, articles) {
+  const sectionEl = document.getElementById('noticia-related');
+  const listEl = document.getElementById('noticia-related-list');
+  listEl.innerHTML = '';
+
+  const others = articles.filter((a) => a.slug !== article.slug);
+  const sameCategory = others.filter((a) => a.category === article.category);
+  const rest = others.filter((a) => a.category !== article.category);
+  const related = [...sameCategory, ...rest].slice(0, 4);
+
+  if (!related.length) {
+    sectionEl.hidden = true;
+    return;
+  }
+
+  related.forEach((post) => {
+    const item = document.createElement('a');
+    item.className = 'noticia-related-item';
+    item.href = `noticia.html?slug=${encodeURIComponent(post.slug)}`;
+    const thumb = post.media && post.mediaType !== 'video'
+      ? `<img src="${post.media}" alt="">`
+      : '<span class="noticia-related-thumb-placeholder"></span>';
+    item.innerHTML = `
+      <span class="noticia-related-thumb">${thumb}</span>
+      <span class="noticia-related-body">
+        <span class="noticia-related-category">${post.category}</span>
+        <span class="noticia-related-title">${post.title}</span>
+        <span class="noticia-related-meta">${post.date}</span>
+      </span>
+    `;
+    listEl.appendChild(item);
+  });
+
+  sectionEl.hidden = false;
+}
+
 fetch('/api/articles')
   .then((res) => res.json())
   .then((articles) => {
     const article = articles.find((a) => a.slug === getSlugParam());
     if (!article) return renderNotFound();
     renderNoticia(article);
+    renderRelated(article, articles);
   });

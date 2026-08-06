@@ -4,7 +4,7 @@
     {
       "name": "mrgnt-emulators",
       "runtimeExecutable": "firebase",
-      "runtimeArgs": ["emulators:start"],
+      "runtimeArgs": ["emulators:start", "--import=./emulator-data", "--export-on-exit"],
       "port": 5050
     }
   ]

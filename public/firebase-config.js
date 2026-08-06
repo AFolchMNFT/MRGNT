@@ -15,7 +15,8 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-if (location.hostname === 'localhost') {
+// Only connect to emulators when running via firebase emulators:start (port 5050)
+if (location.hostname === 'localhost' && location.port === '5050') {
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectStorageEmulator(storage, 'localhost', 9199);
 }

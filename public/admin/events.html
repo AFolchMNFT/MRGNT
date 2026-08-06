@@ -30,13 +30,18 @@
     </div>
     <div class="admin-form-row">
       <div class="admin-field">
-        <label for="event-stage">Escenario</label>
-        <input class="admin-input" type="text" id="event-stage" required>
+        <label for="event-stage">Lugar</label>
+        <input class="admin-input" type="text" id="event-stage" placeholder="Nombre del lugar, foro o escenario" required>
       </div>
       <div class="admin-field">
         <label for="event-artist">Artista / acto</label>
         <input class="admin-input" type="text" id="event-artist" required>
       </div>
+    </div>
+    <div class="admin-field">
+      <label for="event-location-url">Ubicación en Google Maps (opcional)</label>
+      <input class="admin-input" type="url" id="event-location-url" placeholder="https://maps.app.goo.gl/...">
+      <p class="admin-hint">En Google Maps, busca el lugar exacto y usa "Compartir" → "Copiar enlace". Se mostrará como mapa en la página del evento.</p>
     </div>
     <div class="admin-field">
       <label for="event-title">Título (opcional)</label>
@@ -59,6 +64,11 @@
         <label for="event-ticket-link">Enlace de boletos (opcional)</label>
         <input class="admin-input" type="url" id="event-ticket-link" placeholder="https://...">
       </div>
+    </div>
+    <div class="admin-field">
+      <label for="event-embed-url">Embed de redes sociales (opcional)</label>
+      <input class="admin-input" type="url" id="event-embed-url" placeholder="https://www.youtube.com/watch?v=...">
+      <p class="admin-hint">Pega un enlace de YouTube, Instagram, TikTok o X/Twitter para mostrarlo en la página del evento.</p>
     </div>
     <div class="admin-form-actions">
       <button type="submit" class="btn btn-secondary btn-md" id="event-submit">Guardar evento</button>

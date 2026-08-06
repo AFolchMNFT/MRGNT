@@ -60,6 +60,7 @@ router.get('/', async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   const error = validate(req.body || {});
   if (error) return res.status(400).json({ error });
+  if (!req.body.media) return res.status(400).json({ error: 'La foto de portada es requerida' });
 
   const { title, category, article_date, author, excerpt, note, media, media_path, media_type } = req.body;
   const rawSlug = req.body.slug && req.body.slug.trim() ? req.body.slug.trim() : title;
@@ -126,19 +127,22 @@ router.put('/:id', requireAuth, async (req, res) => {
   let media = existing.media;
   let mediaPath = existing.media_path;
   let mediaType = existing.media_type;
+  let mediaPathToDelete = null;
 
   if (req.body.media) {
-    const oldPath = existing.media_path;
+    mediaPathToDelete = existing.media_path;
     media = req.body.media;
     mediaPath = req.body.media_path || null;
     mediaType = req.body.media_type || null;
-    if (oldPath) await deleteMediaFile(oldPath).catch(() => {});
   } else if (req.body.remove_media === true) {
-    if (existing.media_path) await deleteMediaFile(existing.media_path).catch(() => {});
+    mediaPathToDelete = existing.media_path;
     media = null;
     mediaPath = null;
     mediaType = null;
   }
+
+  if (!media) return res.status(400).json({ error: 'La foto de portada es requerida' });
+  if (mediaPathToDelete) await deleteMediaFile(mediaPathToDelete).catch(() => {});
 
   let embedUrl = existing.embed_url || null;
   let embedProvider = existing.embed_provider || null;
