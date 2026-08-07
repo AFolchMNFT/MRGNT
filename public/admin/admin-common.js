@@ -1,6 +1,12 @@
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
 import { auth } from '/firebase-config.js';
 
+export function resolveRole(claims) {
+  if (claims.role === 'admin' || claims.role === 'writer') return claims.role;
+  if (claims.admin) return 'admin';
+  return null;
+}
+
 export async function apiFetch(url, options = {}) {
   const user = auth.currentUser;
   const token = user ? await user.getIdToken() : null;
@@ -14,7 +20,9 @@ export async function apiFetch(url, options = {}) {
   return res;
 }
 
-export function requireAdminSession() {
+// Resolves to { user, role } for an allowed role, or redirects and resolves null.
+// allowedRoles defaults to any authenticated account (admin or writer).
+export function requireAdminSession(allowedRoles = ['admin', 'writer']) {
   return new Promise((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
@@ -23,26 +31,35 @@ export function requireAdminSession() {
         return resolve(null);
       }
       const token = await user.getIdTokenResult();
-      if (!token.claims.admin) {
+      const role = resolveRole(token.claims);
+      if (!role) {
         await signOut(auth);
         window.location.href = '/admin/login.html';
         return resolve(null);
       }
-      resolve(user);
+      if (!allowedRoles.includes(role)) {
+        window.location.href = '/admin/index.html';
+        return resolve(null);
+      }
+      resolve({ user, role });
     });
   });
 }
 
-export function renderAdminNav(active) {
+export function renderAdminNav(active, role) {
+  const links = [];
+  if (role === 'admin') links.push(['/admin/artists.html', 'artists', 'Artistas']);
+  if (role === 'admin') links.push(['/admin/events.html', 'events', 'Eventos']);
+  if (role === 'admin') links.push(['/admin/event-submissions.html', 'submissions', 'Solicitudes']);
+  links.push(['/admin/articles.html', 'articles', 'Noticias']);
+  if (role === 'admin') links.push(['/admin/users.html', 'users', 'Usuarios']);
+
   const nav = document.createElement('nav');
   nav.className = 'admin-nav';
   nav.innerHTML = `
     <a href="/admin/index.html" class="admin-nav-brand">MRGNT admin</a>
     <div class="admin-nav-links">
-      <a href="/admin/artists.html" class="admin-nav-link${active === 'artists' ? ' active' : ''}">Artistas</a>
-      <a href="/admin/events.html" class="admin-nav-link${active === 'events' ? ' active' : ''}">Eventos</a>
-      <a href="/admin/event-submissions.html" class="admin-nav-link${active === 'submissions' ? ' active' : ''}">Solicitudes</a>
-      <a href="/admin/articles.html" class="admin-nav-link${active === 'articles' ? ' active' : ''}">Noticias</a>
+      ${links.map(([href, key, label]) => `<a href="${href}" class="admin-nav-link${active === key ? ' active' : ''}">${label}</a>`).join('')}
       <button type="button" class="admin-nav-logout" id="admin-logout">Cerrar sesión</button>
     </div>
   `;

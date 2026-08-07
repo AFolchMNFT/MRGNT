@@ -1,6 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
-const { requireAuth } = require('../auth');
+const { requireAdmin } = require('../auth');
 const { isoToDisplay, dayAbbrev } = require('../lib/dateFormat');
 const { slugify } = require('../lib/slugify');
 const { sanitizeRichText } = require('../lib/sanitize');
@@ -124,7 +124,7 @@ router.get('/resolve-map', async (req, res) => {
   res.json({ embedUrl });
 });
 
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   const error = validate(req.body || {});
   if (error) return res.status(400).json({ error });
 
@@ -138,7 +138,7 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-router.put('/:id', requireAuth, async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   const ref = admin.firestore().collection('events').doc(req.params.id);
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
@@ -177,7 +177,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   const ref = admin.firestore().collection('events').doc(req.params.id);
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });

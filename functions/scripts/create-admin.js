@@ -21,7 +21,7 @@ async function createAdmin(email, password) {
       throw err;
     }
   }
-  await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
+  await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true, role: 'admin' });
   console.log(`Admin claim set for ${email} (${userRecord.uid})`);
 }
 

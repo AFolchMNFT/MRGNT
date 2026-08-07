@@ -205,6 +205,21 @@ body[data-admin] { min-height: 100vh; }
 }
 .admin-row-actions .admin-delete { color: var(--color-error); }
 
+.admin-status-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.admin-status-published { background: var(--color-cream-100); color: var(--color-success, #2a7d4f); border: var(--border-width-sm) solid var(--border-default); }
+.admin-status-draft { background: var(--color-cream-100); color: var(--color-rust-600); border: var(--border-width-sm) solid var(--border-default); }
+
 .admin-empty { font-family: var(--font-body); color: var(--text-muted); padding: 24px 0; }
 
 /* Social image generator */
