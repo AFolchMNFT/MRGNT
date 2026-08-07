@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usuarios — MRGNT admin</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body data-admin>
+
+<div class="admin-shell">
+  <div class="admin-heading">
+    <h1>USUARIOS</h1>
+  </div>
+
+  <form class="card admin-form" id="user-form">
+    <p class="admin-error" id="user-error" hidden></p>
+    <p class="admin-hint" id="user-success" hidden></p>
+    <div class="admin-form-row">
+      <div class="admin-field">
+        <label for="user-email">Correo electrónico</label>
+        <input class="admin-input" type="email" id="user-email" required>
+      </div>
+      <div class="admin-field">
+        <label for="user-password">Contraseña temporal</label>
+        <input class="admin-input" type="text" id="user-password" minlength="6" required>
+      </div>
+      <div class="admin-field">
+        <label for="user-role">Rol</label>
+        <select class="admin-select" id="user-role" required>
+          <option value="writer">Redactor (solo Noticias)</option>
+          <option value="admin">Administrador (acceso total)</option>
+        </select>
+      </div>
+    </div>
+    <p class="admin-hint">Comparte el correo y la contraseña con la persona por un canal seguro. Podrá cambiarla después de iniciar sesión.</p>
+    <div class="admin-form-actions">
+      <button type="submit" class="btn btn-secondary btn-md" id="user-submit">Crear cuenta</button>
+    </div>
+  </form>
+
+  <div class="admin-list" id="users-list"></div>
+</div>
+
+<script type="module" src="/admin/users.js"></script>
+</body>
+</html>

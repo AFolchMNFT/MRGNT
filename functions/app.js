@@ -9,6 +9,7 @@ const eventSubmissionsRouter = require('./routes/eventSubmissions');
 const articlesRouter = require('./routes/articles');
 const metaRouter = require('./routes/meta');
 const spotifyRouter = require('./routes/spotify');
+const usersRouter = require('./routes/users');
 
 const app = express();
 app.use(express.json());
@@ -19,5 +20,6 @@ app.use('/api/event-submissions', eventSubmissionsRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/meta', metaRouter);
 app.use('/api/spotify', spotifyRouter);
+app.use('/api/users', usersRouter);
 
 module.exports = app;

@@ -8,6 +8,9 @@ let editingId = null;
 let editingArticle = null;
 let currentMediaRemoved = false;
 let currentEmbedRemoved = false;
+let currentRole = null;
+let currentUid = null;
+let statusFilter = 'all';
 
 const form = document.getElementById('article-form');
 const errorEl = document.getElementById('article-error');
@@ -114,32 +117,65 @@ function startEdit(article) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function canEdit(article) {
+  if (currentRole === 'admin') return true;
+  return article.createdBy === currentUid && article.status !== 'published';
+}
+
+function filteredArticles() {
+  if (statusFilter === 'published') return articles.filter((a) => a.status === 'published');
+  if (statusFilter === 'draft') return articles.filter((a) => a.status !== 'published');
+  return articles;
+}
+
+async function togglePublish(article) {
+  const action = article.status === 'published' ? 'unpublish' : 'publish';
+  const res = await apiFetch(`/api/articles/${article.id}/${action}`, { method: 'POST' });
+  if (res.ok) {
+    if (editingId === article.id) resetForm();
+    await loadArticles();
+  } else {
+    alert('No se pudo actualizar el estado del artículo');
+  }
+}
+
 function renderList() {
   listEl.innerHTML = '';
-  if (!articles.length) {
-    listEl.innerHTML = '<p class="admin-empty">Aún no hay artículos.</p>';
+  const visible = filteredArticles();
+  if (!visible.length) {
+    listEl.innerHTML = '<p class="admin-empty">No hay artículos en esta vista.</p>';
     return;
   }
-  articles.forEach((article) => {
+  visible.forEach((article) => {
     const row = document.createElement('div');
     row.className = 'admin-row';
     const thumb = article.media && article.mediaType !== 'video'
       ? `<img class="admin-row-thumb" src="${article.media}" alt="">`
       : '';
+    const statusBadge = article.status === 'published'
+      ? '<span class="admin-status-badge admin-status-published">Publicado</span>'
+      : '<span class="admin-status-badge admin-status-draft">Sin publicar</span>';
+    const editable = canEdit(article);
     row.innerHTML = `
       ${thumb}
       <div class="admin-row-main">
-        <div class="admin-row-title">${article.title}</div>
+        <div class="admin-row-title">${article.title} ${statusBadge}</div>
         <div class="admin-row-sub">${article.category} — ${article.author} · ${article.date}</div>
       </div>
       <div class="admin-row-actions">
-        <a href="/noticia.html?slug=${encodeURIComponent(article.slug)}" target="_blank">Ver</a>
-        <button type="button" class="admin-edit">Editar</button>
-        <button type="button" class="admin-delete">Eliminar</button>
+        ${article.status === 'published' ? `<a href="/noticia.html?slug=${encodeURIComponent(article.slug)}" target="_blank">Ver</a>` : ''}
+        ${currentRole === 'admin' ? `<button type="button" class="admin-publish">${article.status === 'published' ? 'Despublicar' : 'Publicar'}</button>` : ''}
+        ${editable ? '<button type="button" class="admin-edit">Editar</button>' : ''}
+        ${editable ? '<button type="button" class="admin-delete">Eliminar</button>' : ''}
       </div>
     `;
-    row.querySelector('.admin-edit').addEventListener('click', () => startEdit(article));
-    row.querySelector('.admin-delete').addEventListener('click', () => deleteArticle(article));
+    if (editable) {
+      row.querySelector('.admin-edit').addEventListener('click', () => startEdit(article));
+      row.querySelector('.admin-delete').addEventListener('click', () => deleteArticle(article));
+    }
+    if (currentRole === 'admin') {
+      row.querySelector('.admin-publish').addEventListener('click', () => togglePublish(article));
+    }
     listEl.appendChild(row);
   });
 }
@@ -382,9 +418,19 @@ form.addEventListener('submit', async (e) => {
 
 cancelBtn.addEventListener('click', resetForm);
 
+document.querySelectorAll('.admin-filter-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    statusFilter = btn.dataset.filter;
+    document.querySelectorAll('.admin-filter-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    renderList();
+  });
+});
+
 requireAdminSession().then(async (session) => {
   if (!session) return;
-  renderAdminNav('articles');
+  currentRole = session.role;
+  currentUid = session.user.uid;
+  renderAdminNav('articles', session.role);
   const meta = await (await apiFetch('/api/meta')).json();
   categorySelect.innerHTML = meta.noticiasCategories.map((c) => `<option value="${c}">${c}</option>`).join('');
   await loadArticles();

@@ -1,6 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
-const { requireAuth } = require('../auth');
+const { requireAdmin } = require('../auth');
 const { isoToDisplay, dayAbbrev } = require('../lib/dateFormat');
 const { validate, buildDocData, createEventDoc, toClient } = require('./events');
 
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
   try {
     const snap = await admin.firestore().collection('event_submissions').orderBy('createdAt', 'asc').get();
     res.json(snap.docs.map(toClientSubmission));
@@ -65,7 +65,7 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-router.post('/:id/approve', requireAuth, async (req, res) => {
+router.post('/:id/approve', requireAdmin, async (req, res) => {
   const ref = admin.firestore().collection('event_submissions').doc(req.params.id);
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
@@ -80,7 +80,7 @@ router.post('/:id/approve', requireAuth, async (req, res) => {
   }
 });
 
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   const ref = admin.firestore().collection('event_submissions').doc(req.params.id);
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });

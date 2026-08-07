@@ -1,6 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
-const { requireAuth } = require('../auth');
+const { requireAuth, requireAdmin, resolveRole, decodeToken } = require('../auth');
 const { NOTICIAS_CATEGORIES } = require('../constants');
 const { isoToDisplay } = require('../lib/dateFormat');
 const { deleteMediaFile } = require('../storage');
@@ -28,6 +28,8 @@ function toClient(doc) {
     mediaType: d.media_type || null,
     embedUrl: d.embed_url || null,
     embedProvider: d.embed_provider || null,
+    status: d.status === 'published' ? 'published' : 'draft',
+    createdBy: d.created_by || null,
   };
 }
 
@@ -50,7 +52,11 @@ function validate(body) {
 
 router.get('/', async (req, res) => {
   try {
-    const snap = await admin.firestore().collection('articles').orderBy('article_date', 'desc').get();
+    const decoded = await decodeToken(req);
+    const role = decoded && resolveRole(decoded);
+    let query = admin.firestore().collection('articles').orderBy('article_date', 'desc');
+    if (!role) query = query.where('status', '==', 'published');
+    const snap = await query.get();
     res.json(snap.docs.map(toClient));
   } catch {
     res.status(500).json({ error: 'Error al obtener artículos' });
@@ -80,6 +86,9 @@ router.post('/', requireAuth, async (req, res) => {
     media_type: media_type || null,
     embed_url: embedUrl,
     embed_provider: embedProvider,
+    status: 'draft',
+    created_by: req.user.uid,
+    created_by_email: req.user.email || null,
   };
 
   const col = admin.firestore().collection('articles');
@@ -118,11 +127,16 @@ router.put('/:id', requireAuth, async (req, res) => {
   const oldSnap = await oldRef.get();
   if (!oldSnap.exists) return res.status(404).json({ error: 'No encontrado' });
 
+  const existing = oldSnap.data();
+  if (req.role !== 'admin') {
+    if (existing.created_by !== req.user.uid) return res.status(403).json({ error: 'No puedes editar artículos de otros autores' });
+    if (existing.status === 'published') return res.status(403).json({ error: 'No puedes editar un artículo ya publicado' });
+  }
+
   const error = validate(req.body || {});
   if (error) return res.status(400).json({ error });
 
   const { title, category, article_date, author, excerpt, note } = req.body;
-  const existing = oldSnap.data();
 
   let media = existing.media;
   let mediaPath = existing.media_path;
@@ -170,6 +184,9 @@ router.put('/:id', requireAuth, async (req, res) => {
     media_type: mediaType,
     embed_url: embedUrl,
     embed_provider: embedProvider,
+    status: existing.status === 'published' ? 'published' : 'draft',
+    created_by: existing.created_by || req.user.uid,
+    created_by_email: existing.created_by_email || req.user.email || null,
   };
 
   try {
@@ -210,11 +227,41 @@ router.delete('/:id', requireAuth, async (req, res) => {
     const snap = await ref.get();
     if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
     const data = snap.data();
+    if (req.role !== 'admin') {
+      if (data.created_by !== req.user.uid) return res.status(403).json({ error: 'No puedes eliminar artículos de otros autores' });
+      if (data.status === 'published') return res.status(403).json({ error: 'No puedes eliminar un artículo ya publicado' });
+    }
     await ref.delete();
     if (data.media_path) await deleteMediaFile(data.media_path).catch(() => {});
     res.status(204).end();
   } catch {
     res.status(500).json({ error: 'Error al eliminar artículo' });
+  }
+});
+
+router.post('/:id/publish', requireAdmin, async (req, res) => {
+  const ref = admin.firestore().collection('articles').doc(req.params.id);
+  const snap = await ref.get();
+  if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
+  try {
+    await ref.update({ status: 'published' });
+    const updated = await ref.get();
+    res.json(toClient(updated));
+  } catch {
+    res.status(500).json({ error: 'Error al publicar artículo' });
+  }
+});
+
+router.post('/:id/unpublish', requireAdmin, async (req, res) => {
+  const ref = admin.firestore().collection('articles').doc(req.params.id);
+  const snap = await ref.get();
+  if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
+  try {
+    await ref.update({ status: 'draft' });
+    const updated = await ref.get();
+    res.json(toClient(updated));
+  } catch {
+    res.status(500).json({ error: 'Error al despublicar artículo' });
   }
 });
 

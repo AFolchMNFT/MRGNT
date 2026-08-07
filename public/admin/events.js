@@ -123,8 +123,8 @@ form.addEventListener('submit', async (e) => {
 
 cancelBtn.addEventListener('click', resetForm);
 
-requireAdminSession().then(async (session) => {
+requireAdminSession(['admin']).then(async (session) => {
   if (!session) return;
-  renderAdminNav('events');
+  renderAdminNav('events', session.role);
   await loadEvents();
 });
