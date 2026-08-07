@@ -279,9 +279,9 @@ form.addEventListener('submit', async (e) => {
 
 cancelBtn.addEventListener('click', resetForm);
 
-requireAdminSession().then(async (session) => {
+requireAdminSession(['admin']).then(async (session) => {
   if (!session) return;
-  renderAdminNav('artists');
+  renderAdminNav('artists', session.role);
   const meta = await (await apiFetch('/api/meta')).json();
   disciplineSelect.innerHTML = meta.disciplines.map((d) => `<option value="${d}">${d}</option>`).join('');
   await loadArtists();

@@ -1,5 +1,6 @@
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
 import { auth } from '/firebase-config.js';
+import { resolveRole } from '/admin/admin-common.js';
 
 const FIREBASE_ERRORS = {
   'auth/invalid-email': 'Correo inválido',
@@ -9,11 +10,11 @@ const FIREBASE_ERRORS = {
   'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde.',
 };
 
-// Redirect if already authenticated admin
+// Redirect if already authenticated
 onAuthStateChanged(auth, async (user) => {
   if (!user) return;
   const token = await user.getIdTokenResult(true);
-  if (token.claims.admin) window.location.href = '/admin/index.html';
+  if (resolveRole(token.claims)) window.location.href = '/admin/index.html';
 });
 
 const form = document.getElementById('login-form');
@@ -27,7 +28,7 @@ form.addEventListener('submit', async (e) => {
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
     const token = await cred.user.getIdTokenResult(true);
-    if (!token.claims.admin) {
+    if (!resolveRole(token.claims)) {
       await auth.signOut();
       errorEl.textContent = 'Esta cuenta no tiene permisos de administrador.';
       errorEl.hidden = false;

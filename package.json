@@ -11,6 +11,7 @@
     "migrate": "cd functions && node scripts/migrate-seed-data.js",
     "migrate-notes": "cd functions && node scripts/migrate-article-notes-to-html.js",
     "backfill-event-slugs": "cd functions && node scripts/backfill-event-slugs.js",
-    "backfill-artist-slugs": "cd functions && node scripts/backfill-artist-slugs.js"
+    "backfill-artist-slugs": "cd functions && node scripts/backfill-artist-slugs.js",
+    "backfill-article-status": "cd functions && node scripts/backfill-article-status.js"
   }
 }

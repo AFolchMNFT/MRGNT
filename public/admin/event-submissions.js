@@ -49,8 +49,8 @@ async function rejectSubmission(sub) {
   else alert('No se pudo rechazar la solicitud');
 }
 
-requireAdminSession().then(async (session) => {
+requireAdminSession(['admin']).then(async (session) => {
   if (!session) return;
-  renderAdminNav('submissions');
+  renderAdminNav('submissions', session.role);
   await loadSubmissions();
 });
