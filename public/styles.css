@@ -390,6 +390,12 @@ a.artista-track:hover { background: var(--color-cream-100); }
 .artista-track-name { font-family: var(--font-body); font-weight: 700; font-size: var(--text-sm); color: var(--text-body); flex: 1; }
 .artista-track-duration { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); }
 
+/* ABOUT */
+.about-inner { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.about-inner h2 { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--color-ink-900); margin: 0 0 4px; text-align: center; }
+.about-lead { font-family: var(--font-body); font-weight: 700; font-size: var(--text-lg); color: var(--color-ink-900); margin: 0; line-height: 1.4; }
+.about-inner p { font-family: var(--font-body); font-size: var(--text-base); color: var(--text-body); margin: 0; line-height: 1.65; }
+
 /* CONTACT */
 .contact-section { padding: 56px 32px; background: var(--color-ink-900); }
 .contact-inner { max-width: 640px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center; }
