@@ -70,7 +70,11 @@ router.post('/:id/approve', requireAdmin, async (req, res) => {
   const snap = await ref.get();
   if (!snap.exists) return res.status(404).json({ error: 'No encontrado' });
 
-  const docData = await buildDocData(snap.data());
+  // snap.data() was already normalized by buildDocData() when the submission was created
+  // (e.g. blank optional fields stored as null), so re-running it here would call
+  // .trim() on those nulls and throw. Just drop the submission-only fields and reuse
+  // the stored event data as-is.
+  const { submitter_name, submitter_email, createdAt, ...docData } = snap.data();
   try {
     const eventSnap = await createEventDoc(docData);
     await ref.delete();
