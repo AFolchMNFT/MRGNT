@@ -13,6 +13,7 @@ const DESCRIPTION_MAX_LENGTH = 200;
 
 const eventoTemplate = fs.readFileSync(path.join(__dirname, '../templates/evento.html'), 'utf8');
 const noticiaTemplate = fs.readFileSync(path.join(__dirname, '../templates/noticia.html'), 'utf8');
+const artistaTemplate = fs.readFileSync(path.join(__dirname, '../templates/artista.html'), 'utf8');
 
 // Every template has exactly one <title> near the top of <head> — replace it with the
 // full set of title/description/Open Graph/Twitter tags for this specific page.
@@ -92,6 +93,35 @@ router.get('/noticia.html', async (req, res) => {
 
   res.set('Content-Type', 'text/html; charset=utf-8');
   res.send(injectMeta(noticiaTemplate, meta));
+});
+
+router.get('/artista.html', async (req, res) => {
+  const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
+  const url = `${SITE_URL}/artista.html${slug ? `?slug=${encodeURIComponent(slug)}` : ''}`;
+  let meta = {
+    title: 'Artistas — MRGNT',
+    description: 'Los artistas emergentes que acompañamos en su camino: poesía, declamación, música, artes visuales y escultura.',
+    url,
+    image: DEFAULT_IMAGE,
+    type: 'website',
+  };
+
+  if (slug) {
+    try {
+      const snap = await admin.firestore().collection('artists').where('slug', '==', slug).limit(1).get();
+      if (!snap.empty) {
+        const d = snap.docs[0].data();
+        const disciplineLine = `${d.discipline}${d.genre ? ' — ' + d.genre : ''}`;
+        const description = stripTags(d.bio || '') || disciplineLine;
+        meta = { title: `${d.name} — MRGNT`, description: truncate(description, DESCRIPTION_MAX_LENGTH), url, image: DEFAULT_IMAGE, type: 'profile' };
+      }
+    } catch {
+      // Firestore read failed — fall back to the generic defaults above.
+    }
+  }
+
+  res.set('Content-Type', 'text/html; charset=utf-8');
+  res.send(injectMeta(artistaTemplate, meta));
 });
 
 module.exports = router;

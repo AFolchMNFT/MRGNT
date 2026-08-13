@@ -19,6 +19,11 @@
           "source": "/noticia.html",
           "function": "api",
           "region": "us-central1"
+        },
+        {
+          "source": "/artista.html",
+          "function": "api",
+          "region": "us-central1"
         }
       ]
     },
@@ -39,6 +44,11 @@
         },
         {
           "source": "/noticia.html",
+          "function": "apiDev",
+          "region": "us-central1"
+        },
+        {
+          "source": "/artista.html",
           "function": "apiDev",
           "region": "us-central1"
         }
