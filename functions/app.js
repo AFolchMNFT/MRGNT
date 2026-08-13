@@ -10,10 +10,12 @@ const articlesRouter = require('./routes/articles');
 const metaRouter = require('./routes/meta');
 const spotifyRouter = require('./routes/spotify');
 const usersRouter = require('./routes/users');
+const pagesRouter = require('./routes/pages');
 
 const app = express();
 app.use(express.json());
 
+app.use('/', pagesRouter);
 app.use('/api/artists', artistsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/event-submissions', eventSubmissionsRouter);
