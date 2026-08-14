@@ -10,10 +10,14 @@ const articlesRouter = require('./routes/articles');
 const metaRouter = require('./routes/meta');
 const spotifyRouter = require('./routes/spotify');
 const usersRouter = require('./routes/users');
+const pagesRouter = require('./routes/pages');
 
 const app = express();
-app.use(express.json());
+// Event submissions/edits can carry a base64-encoded image (see lib/images.js), which
+// inflates well past the 100kb default — raised to fit the 5MB image limit plus overhead.
+app.use(express.json({ limit: '10mb' }));
 
+app.use('/', pagesRouter);
 app.use('/api/artists', artistsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/event-submissions', eventSubmissionsRouter);
