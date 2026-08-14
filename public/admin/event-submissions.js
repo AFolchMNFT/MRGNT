@@ -96,6 +96,15 @@ function openPreview(sub) {
   document.getElementById('preview-meta').textContent = `${sub.day} ${sub.date} · ${sub.time} — ${sub.stage}${sub.tag ? ' · ' + sub.tag : ''}`;
   document.getElementById('preview-body').innerHTML = sub.description || '';
 
+  const imageEl = document.getElementById('preview-image');
+  if (sub.image) {
+    imageEl.src = sub.image;
+    imageEl.alt = sub.displayTitle;
+    imageEl.hidden = false;
+  } else {
+    imageEl.hidden = true;
+  }
+
   renderPreviewEmbed(sub);
   renderPreviewMap(sub);
 
@@ -140,6 +149,7 @@ function renderList(submissions) {
     const row = document.createElement('div');
     row.className = 'admin-row';
     row.innerHTML = `
+      ${sub.image ? `<img class="admin-row-thumb" src="${sub.image}" alt="">` : ''}
       <div class="admin-row-main">
         <div class="admin-row-title">${sub.artist}${sub.title ? ' — ' + sub.title : ''}${sub.tag ? ' · ' + sub.tag : ''}</div>
         <div class="admin-row-sub">${sub.day} ${sub.date} · ${sub.time} — ${sub.stage}${sub.cost ? ' · ' + sub.cost : ''}</div>
