@@ -514,6 +514,7 @@ a.artista-track:hover { background: var(--color-cream-100); }
 .noticia-embed .embed-youtube { width: 100%; aspect-ratio: 16 / 9; border: var(--border-width-sm) solid var(--border-subtle); border-radius: var(--radius-md); }
 .noticia-body { font-family: var(--font-body); color: var(--text-body); line-height: var(--leading-relaxed); display: flex; flex-direction: column; gap: 16px; }
 .noticia-body p, .noticia-body ul, .noticia-body ol, .noticia-body blockquote { margin: 0; }
+.evento-image { width: 100%; border-radius: var(--radius-md); display: block; }
 .evento-cost { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; color: var(--color-rust-600); margin: 0; }
 .evento-map { width: 100%; aspect-ratio: 16 / 9; border-radius: var(--radius-md); overflow: hidden; border: var(--border-width-sm) solid var(--border-subtle); }
 .evento-map iframe { width: 100%; height: 100%; border: 0; display: block; }

@@ -60,6 +60,7 @@ function renderList() {
       ? `<a href="${ev.locationUrl}" target="_blank" rel="noopener">Mapa</a>`
       : '';
     row.innerHTML = `
+      ${ev.image ? `<img class="admin-row-thumb" src="${ev.image}" alt="">` : ''}
       <div class="admin-row-main">
         <div class="admin-row-title">${ev.artist}${ev.tag ? ' · ' + ev.tag : ''}</div>
         <div class="admin-row-sub">${ev.day} ${ev.date} · ${ev.time} — ${ev.stage}</div>
