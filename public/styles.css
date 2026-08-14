@@ -215,7 +215,17 @@ section.section { padding: 56px 32px; }
 .section-page { background: var(--surface-page); }
 
 /* TABS */
-.tabs { display: flex; gap: var(--space-2); border-bottom: var(--border-width-sm) solid var(--border-default); margin-top: 20px; flex-wrap: wrap; }
+.tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: var(--border-width-sm) solid var(--border-default);
+  margin-top: 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
 .tab {
   font-family: var(--font-display);
   font-size: var(--text-sm);
@@ -228,6 +238,8 @@ section.section { padding: 56px 32px; }
   cursor: pointer;
   color: var(--text-muted);
   border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .tab.active { color: var(--color-rust-500); border-bottom: 3px solid var(--color-rust-500); }
 
@@ -604,16 +616,6 @@ a.artista-track:hover { background: var(--color-cream-100); }
   .hero h1 { font-size: var(--text-3xl); }
   .page-header h1 { font-size: var(--text-2xl); }
   .eventos-month .event-time { width: auto; }
-
-  /* Category tabs (Noticias / Artistas) become a swipeable single-line carousel */
-  .tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab { flex-shrink: 0; }
 
   /* Center card grids that wrap down to a single column */
   .posts-grid,
