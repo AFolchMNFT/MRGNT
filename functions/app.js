@@ -11,6 +11,7 @@ const metaRouter = require('./routes/meta');
 const spotifyRouter = require('./routes/spotify');
 const usersRouter = require('./routes/users');
 const pagesRouter = require('./routes/pages');
+const mediaRouter = require('./routes/media');
 
 const app = express();
 // Event submissions/edits can carry a base64-encoded image (see lib/images.js), which
@@ -25,5 +26,6 @@ app.use('/api/articles', articlesRouter);
 app.use('/api/meta', metaRouter);
 app.use('/api/spotify', spotifyRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/media', mediaRouter);
 
 module.exports = app;

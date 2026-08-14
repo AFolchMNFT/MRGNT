@@ -218,10 +218,10 @@ function getPhotoSource() {
   const file = mediaInput.files[0];
   if (file) {
     if (!file.type.startsWith('image/')) return null;
-    return { src: URL.createObjectURL(file), crossOrigin: false };
+    return { src: URL.createObjectURL(file) };
   }
   if (editingId && editingArticle && editingArticle.media && !currentMediaRemoved && editingArticle.mediaType !== 'video') {
-    return { src: editingArticle.media, crossOrigin: true };
+    return { src: editingArticle.media };
   }
   return null;
 }
