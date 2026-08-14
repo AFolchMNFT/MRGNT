@@ -64,14 +64,31 @@ function fitFontSize(ctx, text, family, weight, maxWidth, maxSize, minSize) {
   return size;
 }
 
-function loadImage(src, crossOrigin) {
+// Firebase Storage download URLs don't send Access-Control-Allow-Origin, so loading
+// them straight into an <img> taints the canvas and breaks toDataURL(). Route them
+// through our own same-origin proxy instead (see functions/routes/media.js) — same-origin
+// images never taint the canvas, no CORS configuration needed.
+function resolveImageSrc(src) {
+  if (typeof src === 'string' && src.startsWith('https://firebasestorage.googleapis.com/')) {
+    return `/api/media/proxy?url=${encodeURIComponent(src)}`;
+  }
+  return src;
+}
+
+function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    if (crossOrigin) img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error('No se pudo cargar una de las imágenes.'));
-    img.src = src;
+    img.src = resolveImageSrc(src);
   });
+}
+
+const LOGO_SRC = '/assets/logo.png';
+let logoImagePromise = null;
+function getLogoImage() {
+  if (!logoImagePromise) logoImagePromise = loadImage(LOGO_SRC).catch(() => null);
+  return logoImagePromise;
 }
 
 function drawCover(ctx, img, x, y, w, h) {
@@ -96,16 +113,13 @@ function drawDoubleRule(ctx, x1, x2, y) {
   drawRule(ctx, x1, x2, y + 7, 2);
 }
 
-function drawWordmark(ctx, x, y, size, rotation) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(rotation);
-  ctx.font = `700 ${size}px Bungee, sans-serif`;
-  ctx.fillStyle = COLORS.rust;
-  ctx.fillText('MRGNT', 3, 3);
-  ctx.fillStyle = COLORS.ink;
-  ctx.fillText('MRGNT', 0, 0);
-  ctx.restore();
+// Draws the real MRGNT logo (public/assets/logo.png) at the given top-left corner,
+// scaled to logoH tall while keeping its natural aspect ratio. Returns the drawn width.
+function drawLogo(ctx, logoImg, x, y, logoH) {
+  if (!logoImg) return 0;
+  const logoW = logoH * (logoImg.width / logoImg.height);
+  ctx.drawImage(logoImg, x, y, logoW, logoH);
+  return logoW;
 }
 
 // ---- Shared masthead (fixed, same on every generated newspaper image) ----
@@ -164,7 +178,7 @@ async function drawEventsList(ctx, width, rowsTop, rowsBottom, events) {
   let heroImg = null;
   if (withImage) {
     try {
-      heroImg = await loadImage(withImage.image, true);
+      heroImg = await loadImage(withImage.image);
     } catch {
       heroImg = null;
     }
@@ -224,37 +238,42 @@ async function drawEventsList(ctx, width, rowsTop, rowsBottom, events) {
   });
 }
 
-function drawEventsFooter(ctx, width, height) {
+function drawEventsFooter(ctx, width, height, logoImg) {
   const marginX = MARGIN;
-  const y = height - 190;
-  drawDoubleRule(ctx, marginX, width - marginX, y);
+  const topY = height - 210;
+  const bottomRuleY = height - 40;
+  drawDoubleRule(ctx, marginX, width - marginX, topY);
 
-  drawWordmark(ctx, marginX, y + 96, 58, -0.04);
+  const contentTop = topY + 30;
+  const logoH = 66;
+  const logoW = drawLogo(ctx, logoImg, marginX, contentTop, logoH);
 
-  const textX = marginX + 250;
+  const textX = marginX + logoW + (logoW ? 36 : 0);
+  const textMaxWidth = width - marginX - textX;
+
   ctx.textAlign = 'left';
-  ctx.font = '700 22px "Space Grotesk", sans-serif';
   ctx.fillStyle = COLORS.ink;
-  ctx.fillText('APOYA. ASISTE.', textX, y + 42);
-  ctx.fillText('HAZ ESCENA.', textX, y + 72);
+  ctx.font = '700 22px "Space Grotesk", sans-serif';
+  ctx.fillText('APOYA. ASISTE.', textX, contentTop + 24);
+  ctx.fillText('HAZ ESCENA.', textX, contentTop + 52);
 
   ctx.font = '400 17px "Space Grotesk", sans-serif';
   ctx.fillStyle = COLORS.muted;
-  const lines = ['La cultura se vive,', 'se comparte y se', 'construye juntos.', 'Nos vemos ahí.'];
-  let ly = y + 100;
-  lines.forEach((line) => {
+  const taglineLines = wrapText(ctx, 'La cultura se vive, se comparte y se construye juntos. Nos vemos ahí.', textMaxWidth).slice(0, 2);
+  let ly = contentTop + 80;
+  taglineLines.forEach((line) => {
     ctx.fillText(line, textX, ly);
     ly += 21;
   });
 
-  drawRule(ctx, marginX, width - marginX, height - 44, 2);
+  drawRule(ctx, marginX, width - marginX, bottomRuleY, 2);
 }
 
 export async function generateEventsNewspaperImage(events) {
   if (!Array.isArray(events) || events.length < EVENTS_MIN || events.length > EVENTS_MAX) {
     throw new Error(`Selecciona entre ${EVENTS_MIN} y ${EVENTS_MAX} eventos.`);
   }
-  await loadFonts();
+  const [, logoImg] = await Promise.all([loadFonts(), getLogoImage()]);
 
   const canvas = document.createElement('canvas');
   canvas.width = WIDTH_EVENTS;
@@ -266,7 +285,7 @@ export async function generateEventsNewspaperImage(events) {
   let y = drawMasthead(ctx, WIDTH_EVENTS);
   y = drawEventsHeadline(ctx, WIDTH_EVENTS, y);
 
-  const footerTop = HEIGHT_EVENTS - 230;
+  const footerTop = HEIGHT_EVENTS - 250;
   const mapped = events.map((ev) => ({
     dateNum: (ev.date || '').split(' ')[0] || '',
     day: ev.day || '',
@@ -277,20 +296,21 @@ export async function generateEventsNewspaperImage(events) {
   }));
 
   await drawEventsList(ctx, WIDTH_EVENTS, y, footerTop, mapped);
-  drawEventsFooter(ctx, WIDTH_EVENTS, HEIGHT_EVENTS);
+  drawEventsFooter(ctx, WIDTH_EVENTS, HEIGHT_EVENTS, logoImg);
 
   return canvas.toDataURL('image/png');
 }
 
 // ---- Article page ----
 
-function drawArticleHeader(ctx, width) {
-  const y = 76;
-  ctx.textAlign = 'center';
-  drawWordmark(ctx, width / 2, y, 42, -0.03);
-  ctx.textAlign = 'left';
-  drawRule(ctx, MARGIN, width - MARGIN, y + 30, 2);
-  return y + 30;
+function drawArticleHeader(ctx, width, logoImg) {
+  const y = 56;
+  const logoH = 52;
+  const logoW = logoImg ? logoH * (logoImg.width / logoImg.height) : 0;
+  if (logoImg) ctx.drawImage(logoImg, (width - logoW) / 2, y, logoW, logoH);
+  const ruleY = y + logoH + 24;
+  drawRule(ctx, MARGIN, width - MARGIN, ruleY, 2);
+  return ruleY;
 }
 
 function drawArticleByline(ctx, width, y0, author, dateDisplay) {
@@ -373,11 +393,11 @@ function drawArticleFooter(ctx, width, height) {
   drawRule(ctx, marginX, width - marginX, ruleY + 20, 2);
 }
 
-// photoSource: { src, crossOrigin } — a photo is required (matches the "cover photo" requirement on articles)
+// photoSource: { src } — a photo is required (matches the "cover photo" requirement on articles)
 export async function generateArticleNewspaperImage({ title, author, dateDisplay, bodyHtml, excerpt, photoSource }) {
   if (!title || !title.trim()) throw new Error('Escribe un título antes de generar la imagen.');
   if (!photoSource) throw new Error('Sube una foto (no video) para generar la imagen.');
-  await loadFonts();
+  const [, logoImg] = await Promise.all([loadFonts(), getLogoImage()]);
 
   const canvas = document.createElement('canvas');
   canvas.width = WIDTH_ARTICLE;
@@ -386,12 +406,12 @@ export async function generateArticleNewspaperImage({ title, author, dateDisplay
   ctx.fillStyle = COLORS.paper;
   ctx.fillRect(0, 0, WIDTH_ARTICLE, HEIGHT_ARTICLE);
 
-  let y = drawArticleHeader(ctx, WIDTH_ARTICLE);
+  let y = drawArticleHeader(ctx, WIDTH_ARTICLE, logoImg);
   y = drawArticleByline(ctx, WIDTH_ARTICLE, y, author, dateDisplay);
   y = drawArticleHeadline(ctx, WIDTH_ARTICLE, y, title.trim());
 
   const bodyText = stripHtml(bodyHtml) || (excerpt || '').trim();
-  const img = await loadImage(photoSource.src, photoSource.crossOrigin);
+  const img = await loadImage(photoSource.src);
 
   const footerTop = HEIGHT_ARTICLE - 110;
   const remaining = Math.max(180, footerTop - y - 40);
