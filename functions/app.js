@@ -4,6 +4,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const artistsRouter = require('./routes/artists');
+const artistSubmissionsRouter = require('./routes/artistSubmissions');
 const eventsRouter = require('./routes/events');
 const eventSubmissionsRouter = require('./routes/eventSubmissions');
 const articlesRouter = require('./routes/articles');
@@ -20,6 +21,7 @@ app.use(express.json({ limit: '10mb' }));
 
 app.use('/', pagesRouter);
 app.use('/api/artists', artistsRouter);
+app.use('/api/artist-submissions', artistSubmissionsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/event-submissions', eventSubmissionsRouter);
 app.use('/api/articles', articlesRouter);
