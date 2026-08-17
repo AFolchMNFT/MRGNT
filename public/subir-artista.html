@@ -65,6 +65,14 @@
       <div class="submit-field">
         <label for="artist-spotify">Spotify (enlace, opcional)</label>
         <input class="submit-input" type="text" id="artist-spotify" placeholder="https://open.spotify.com/artist/...">
+        <p class="submit-hint" id="artist-spotify-status" hidden></p>
+        <div class="submit-spotify-preview" id="artist-spotify-preview" hidden>
+          <img class="submit-spotify-preview-image" id="artist-spotify-preview-image" alt="">
+          <div class="submit-spotify-preview-body">
+            <strong id="artist-spotify-preview-name"></strong>
+            <ul class="submit-spotify-preview-tracks" id="artist-spotify-preview-tracks"></ul>
+          </div>
+        </div>
       </div>
 
       <hr class="submit-divider">

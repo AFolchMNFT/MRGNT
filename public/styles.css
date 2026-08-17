@@ -608,6 +608,18 @@ a.artista-track:hover { background: var(--color-cream-100); }
 .submit-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .submit-message { font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-error); margin: 0; }
 .submit-message-success { color: var(--color-success); }
+.submit-spotify-preview {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--border-default);
+  background: var(--color-cream-100);
+}
+.submit-spotify-preview-image { width: 64px; height: 64px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; background: var(--surface-card); }
+.submit-spotify-preview-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.submit-spotify-preview-body strong { font-family: var(--font-body); font-size: var(--text-base); color: var(--text-body); }
+.submit-spotify-preview-tracks { margin: 4px 0 0; padding-left: 18px; font-family: var(--font-body); font-size: var(--text-sm); color: var(--text-muted); }
 
 /* CONVOCATORIA PAGE */
 .convocatoria-page .convocatoria-inner { margin: 0; align-items: flex-start; text-align: left; max-width: 640px; }
