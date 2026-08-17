@@ -2,18 +2,57 @@ import { apiFetch, requireAdminSession, renderAdminNav } from '/admin/admin-comm
 
 const listEl = document.getElementById('submissions-list');
 
+async function renderSpotifyPreview(spotifyArtistId) {
+  const sectionEl = document.getElementById('preview-spotify-section');
+  const linkEl = document.getElementById('preview-spotify-link');
+  const statusEl = document.getElementById('preview-spotify-status');
+  const previewEl = document.getElementById('preview-spotify-preview');
+  const rawEl = document.getElementById('preview-spotify-raw');
+
+  if (!spotifyArtistId) {
+    sectionEl.hidden = true;
+    return;
+  }
+
+  sectionEl.hidden = false;
+  rawEl.textContent = `ID: ${spotifyArtistId}`;
+  linkEl.href = `https://open.spotify.com/artist/${spotifyArtistId}`;
+  previewEl.hidden = true;
+  statusEl.textContent = 'Buscando en Spotify…';
+  statusEl.hidden = false;
+
+  try {
+    const [artistRes, tracksRes] = await Promise.all([
+      fetch(`/api/spotify/artist/${spotifyArtistId}`),
+      fetch(`/api/spotify/artist/${spotifyArtistId}/top-tracks`),
+    ]);
+    if (!artistRes.ok) throw new Error();
+    const artistData = await artistRes.json();
+    const tracks = tracksRes.ok ? await tracksRes.json() : [];
+
+    const imageUrl = artistData.images && artistData.images[0] ? artistData.images[0].url : null;
+    const imageEl = document.getElementById('preview-spotify-image');
+    imageEl.src = imageUrl || '';
+    imageEl.hidden = !imageUrl;
+    document.getElementById('preview-spotify-name').textContent = artistData.name;
+    document.getElementById('preview-spotify-tracks').innerHTML =
+      tracks.slice(0, 5).map((t) => `<li>${t.name}</li>`).join('') || '<li>Sin canciones disponibles</li>';
+
+    statusEl.hidden = true;
+    previewEl.hidden = false;
+  } catch {
+    previewEl.hidden = true;
+    statusEl.textContent = 'No se pudo encontrar ese artista en Spotify';
+    statusEl.hidden = false;
+  }
+}
+
 function openPreview(sub) {
   document.getElementById('preview-title').textContent = sub.name;
   document.getElementById('preview-meta').textContent = `${sub.discipline}${sub.genre ? ' — ' + sub.genre : ''}`;
   document.getElementById('preview-body').innerHTML = sub.bio || '';
 
-  const spotifyEl = document.getElementById('preview-spotify-link');
-  if (sub.spotifyArtistId) {
-    spotifyEl.href = `https://open.spotify.com/artist/${sub.spotifyArtistId}`;
-    spotifyEl.hidden = false;
-  } else {
-    spotifyEl.hidden = true;
-  }
+  renderSpotifyPreview(sub.spotifyArtistId);
 
   document.getElementById('preview-overlay').hidden = false;
 }
@@ -46,6 +85,7 @@ function renderList(submissions) {
         <div class="admin-row-sub">Enviado por ${sub.submitterName} (${sub.submitterEmail})</div>
       </div>
       <div class="admin-row-actions">
+        ${sub.spotifyArtistId ? `<a href="https://open.spotify.com/artist/${sub.spotifyArtistId}" target="_blank" rel="noopener">Spotify</a>` : ''}
         <button type="button" class="admin-preview">Ver</button>
         <button type="button" class="admin-approve">Aprobar</button>
         <button type="button" class="admin-delete">Rechazar</button>

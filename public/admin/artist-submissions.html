@@ -26,7 +26,19 @@
     <p class="admin-preview-meta" id="preview-meta"></p>
     <div class="card noticia-card">
       <div class="noticia-body" id="preview-body"></div>
-      <a class="admin-btn-link" id="preview-spotify-link" href="#" target="_blank" rel="noopener" hidden>Ver en Spotify ↗</a>
+      <div class="admin-field" id="preview-spotify-section" hidden>
+        <label>Spotify</label>
+        <p class="admin-hint" id="preview-spotify-raw"></p>
+        <p class="admin-hint" id="preview-spotify-status" hidden></p>
+        <div class="admin-spotify-preview" id="preview-spotify-preview" hidden>
+          <img class="admin-spotify-preview-image" id="preview-spotify-image" alt="">
+          <div class="admin-spotify-preview-body">
+            <strong id="preview-spotify-name"></strong>
+            <ul class="admin-spotify-preview-tracks" id="preview-spotify-tracks"></ul>
+          </div>
+        </div>
+        <a class="admin-btn-link" id="preview-spotify-link" href="#" target="_blank" rel="noopener">Abrir en Spotify ↗</a>
+      </div>
     </div>
   </div>
 </div>
